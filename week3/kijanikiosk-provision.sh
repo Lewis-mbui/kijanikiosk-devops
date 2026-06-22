@@ -69,6 +69,42 @@ provision_packages() {
 
 provision_users() {
   log "=== Phase 2: Service Accounts ==="
+
+  log "Ensuring application group exists"
+  getent group "${APP_GROUP}" >/dev/null 2>&1 || groupadd --system "${APP_GROUP}"
+  success "Group ready"
+
+  for account in kk-api kk-payments kk-logs
+  do
+    log "Processing ${account}"
+
+    if ! id "${account}" >/dev/null 2>&1
+    then
+      useradd \
+      --system \
+      --no-create-home \
+      --shell /usr/sbin/nologin \
+      --home-dir /nonexistent \
+      "${account}"
+
+      success "Created ${account}"
+    else
+      log "${account} already exists"
+    fi
+
+    usermod -aG "${APP_GROUP}" "${account}"
+    success "${account} added to ${APP_GROUP}"
+  done
+
+  if id amina >/dev/null 2>&1
+  then
+    usermod -aG "${APP_GROUP}" amina
+    success "amina added to ${APP_GROUP}"
+  else
+    log "amina account not present - skipping"
+  fi
+
+  success "Service accounts complete"
 }
 
 provision_dirs() {
