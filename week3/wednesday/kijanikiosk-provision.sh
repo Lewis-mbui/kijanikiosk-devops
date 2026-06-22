@@ -241,8 +241,48 @@ UNIT
 
 provision_firewall() {
   log "=== Phase 5: Firewall ==="
-}
 
+  command -v ufw >/dev/null 2>&1 || \
+  error "ufw is not installed"
+
+  log "Resetting firewall"
+
+  ufw --force reset
+
+  success "Firewall reset"
+
+  log "Applying default policies"
+
+  ufw default deny incoming
+
+  ufw default allow outgoing
+
+  success "Default policies applied"
+
+  log "Allowing SSH"
+
+  ufw allow 22/tcp
+
+  success "SSH allowed"
+
+  log "Allowing HTTP"
+
+  ufw allow 80/tcp
+
+  success "HTTP allowed"
+
+  log "Enabling firewall"
+
+  ufw --force enable
+
+  success "Firewall enabled"
+
+  log "Verifying rules"
+
+  ufw status verbose
+
+  success "Firewall configured"
+}
 verify_state() {
   log "=== Phase 6: Verification ==="
 }
