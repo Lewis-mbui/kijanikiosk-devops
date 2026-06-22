@@ -150,7 +150,93 @@ provision_dirs() {
 }
 
 provision_services() {
-  log "=== Phase 4: systemd units ==="
+  log "=== Phase 4: systemd Units ==="
+
+  log "Creating environment files"
+
+  # mkdir -p "${APP_BASE}/config"
+
+  cat > "${APP_BASE}/config/db.env" << EOF
+DB_HOST=localhost
+DB_PORT=5432
+EOF
+
+  cat > "${APP_BASE}/config/api.env" << EOF
+PORT=3000
+EOF
+
+  chmod 640 "${APP_BASE}/config/"*.env
+  chown root:${APP_GROUP} "${APP_BASE}/config/"*.env
+
+  success "Environment files ready"
+
+  log "Writing kk-api.service"
+
+  cat > /etc/systemd/system/kk-api.service << 'UNIT'
+[Unit]
+Description=KijaniKiosk API Service
+Documentation=https://github.com/kijanikiosk/api/blob/main/README.md
+After=network-online.target kk-payments.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=kk-api
+Group=kk-api
+
+WorkingDirectory=/opt/kijanikiosk/api
+
+ExecStart=/usr/bin/node /opt/kijanikiosk/api/server.js
+
+ExecReload=/bin/kill -HUP $MAINPID
+
+Restart=on-failure
+RestartSec=5s
+
+StartLimitBurst=3
+StartLimitIntervalSec=60s
+
+TimeoutStartSec=30s
+TimeoutStopSec=30s
+
+EnvironmentFile=/opt/kijanikiosk/config/db.env
+EnvironmentFile=/opt/kijanikiosk/config/api.env
+
+Environment="NODE_ENV=production"
+Environment="PORT=3000"
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kk-api
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+ProtectSystem=strict
+ReadWritePaths=/opt/kijanikiosk/shared/logs
+
+ProtectHome=true
+
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+  success "Unit file written"
+
+  log "Reloading systemd"
+
+  systemctl daemon-reload
+
+  success "systemd reloaded"
+
+  log "Enabling service"
+
+  systemctl enable kk-api.service
+
+  success "kk-api enabled (not started)"
 }
 
 provision_firewall() {
