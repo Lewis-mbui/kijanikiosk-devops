@@ -3,7 +3,8 @@
 set -euo pipefail
 
 readonly NODE_MAJOR_VERSION=22
-readonly NGINX_VERSION=""
+readonly NODE_VERSION="22.23.0-1nodesource1"
+readonly NGINX_VERSION="1.18.0-6ubuntu14.15"
 readonly APP_BASE="/opt/kijanikiosk"
 readonly APP_GROUP="kijanikiosk"
 
@@ -21,6 +22,49 @@ grep -qi ubuntu /etc/os-release || error "Designed for Ubuntu only"
 # PHASES
 provision_packages() {
   log "=== Phase 1: Packages ==="
+
+  log "Updating package index"
+  apt-get update -qq
+  success "Package index updated"
+  
+  log "Installing prerequisite tools"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  curl gnupg acl ufw
+  success "Prerequisites installed"
+
+  log "Installing NodeSource signing key"
+  # Prepare keyring directory
+  mkdir -p /etc/apt/keyrings
+  chmod 0755 /etc/apt/keyrings
+
+  # Download & install NodeSource GPG key
+  curl -fsSL \
+  https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | \
+  gpg --dearmor -o \
+  /etc/apt/keyrings/nodesource.gpg
+  chmod 644 /etc/apt/keyrings/nodesource.gpg
+  success "NodeSource key installed"
+
+  # Add the repository referencing the specific key file
+  log "Configuring NodeSource repository"
+  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
+  https://deb.nodesource.com/node_${NODE_MAJOR_VERSION}.x nodistro main" \
+  > /etc/apt/sources.list.d/nodesource.list
+  apt-get update -qq
+  success "Repository configured"
+
+  # Install nginx and node
+  log "Installing nginx and nodejs"
+  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  "nginx=${NGINX_VERSION}" "nodejs=${NODE_VERSION}"
+
+  # Immediately hold package versions
+  log "Holding package versions"
+  apt-mark hold nginx nodejs
+
+  log installed versions
+  success "nginx: $(nginx -v 2>&1)"
+  success "node: $(node --version)"
 }
 
 provision_users() {
