@@ -283,8 +283,97 @@ provision_firewall() {
 
   success "Firewall configured"
 }
+
 verify_state() {
-  log "=== Phase 6: Verification ==="
+  log "=== Phase 6: Post-Provision Verification ==="
+
+  local failed=0
+
+  log "Verifying service accounts"
+
+  for account in kk-api kk-payments kk-logs
+  do
+    if id "${account}" >/dev/null 2>&1
+    then
+      success "Account exists: ${account}"
+    else
+      error_msg="Account missing: ${account}"
+      echo "$error_msg"
+
+      ((failed++))
+    fi
+  done
+
+  log "Verifying directories"
+
+  for dir in \
+    api \
+    payments \
+    logs \
+    config \
+    scripts \
+    shared/logs
+  do
+
+    if [[ -d "${APP_BASE}/${dir}" ]]
+    then
+      success "Directory exists: ${dir}"
+    else
+      echo "Missing directory: ${dir}"
+
+      ((failed++))
+    fi
+
+  done
+
+  log "Checking SUID files"
+
+  if find "${APP_BASE}" -perm /4000 | grep . >/dev/null
+  then
+    echo "Unexpected SUID files found"
+
+    ((failed++))
+  else
+    success "No SUID files present"
+  fi
+
+  log "Checking package holds"
+
+  if apt-mark showhold | grep -q "^nginx$"
+  then
+    success "nginx held"
+  else
+    echo "nginx hold missing"
+
+    ((failed++))
+  fi
+
+  if apt-mark showhold | grep -q "^nodejs$"
+  then
+    success "nodejs held"
+  else
+    echo "nodejs hold missing"
+
+    ((failed++))
+  fi
+
+  log "Checking service enablement"
+
+  if systemctl is-enabled kk-api.service >/dev/null 2>&1
+  then
+    success "kk-api enabled"
+  else
+    echo "kk-api not enabled"
+
+    ((failed++))
+  fi
+
+  if [[ "$failed" -gt 0 ]]
+  then
+    error "Verification failed (${failed} issue(s))"
+  fi
+
+  success "Verification passed"
 }
 
 #ENTRY
