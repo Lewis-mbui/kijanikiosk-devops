@@ -137,3 +137,25 @@ SIGTERM was selected instead of SIGKILL because graceful termination allows clea
 Expected outcome:
 
 Port 3001 becomes exclusively owned by the intended application and requests are routed to `kk-payments` instead of the rogue service.
+
+## Remediation Step 2 — Remove Firewall Misconfiguration
+
+Objective: Restore visibility and connectivity for health checks and monitoring.
+
+Before remediation, UFW contained explicit deny rules for TCP port 3001 for both IPv4 and IPv6.
+
+Actions performed:
+
+```bash
+sudo ufw status numbered
+sudo ufw delete <rule>
+sudo ufw status verbose
+```
+
+Decision rationale:
+
+The deny rule prevented monitoring systems and external probes from reaching the application port. Removing the rule restores correct observability and prevents false unhealthy states.
+
+Expected outcome:
+
+Port 3001 is no longer blocked by local firewall policy and health checks can reach the intended backend.
