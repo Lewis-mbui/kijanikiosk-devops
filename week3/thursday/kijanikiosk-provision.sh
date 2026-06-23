@@ -29,7 +29,7 @@ provision_packages() {
   
   log "Installing prerequisite tools"
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  curl gnupg acl ufw
+  curl gnupg acl ufw logrotate
   success "Prerequisites installed"
 
   log "Installing NodeSource signing key"
@@ -147,6 +147,67 @@ provision_dirs() {
   setfacl -d -m u:kk-payments:r-x \
   "${APP_BASE}/shared/logs"
   success "ACLs configured"
+}
+
+provision_logging() {
+  log "=== Phase: Logging Configuration ==="
+
+  # Enable persistent systemd journal storage
+  mkdir -p /var/log/journal
+  systemd-tmpfiles --create --prefix /var/log/journal
+
+  mkdir -p /etc/systemd/journald.conf.d
+
+  cat > /etc/systemd/journald.conf.d/kijanikiosk.conf << 'CONF'
+[Journal]
+Storage=persistent
+Compress=yes
+SystemMaxUse=500M
+SystemMaxFileSize=50M
+CONF
+
+  systemctl reload systemd-journald
+
+  success "Persistent journal configured (max 500MB)"
+
+  log "Configuring application log rotation"
+
+  cat > /etc/logrotate.d/kijanikiosk << 'EOF'
+/opt/kijanikiosk/shared/logs/*.log {
+    daily
+
+    # Daily rotation limits growth while preserving
+    # enough history for post-incident analysis.
+
+    missingok
+
+    rotate 14
+
+    compress
+
+    delaycompress
+
+    notifempty
+
+    su kk-logs kijanikiosk
+
+    create 0640 kk-logs kijanikiosk
+
+    sharedscripts
+
+    postrotate
+        systemctl reload kk-logs.service 2>/dev/null || true
+    endscript
+}
+EOF
+
+  chmod 644 /etc/logrotate.d/kijanikiosk
+
+  log "Validating logrotate configuration"
+
+  logrotate --debug /etc/logrotate.d/kijanikiosk >/dev/null
+
+  success "Application log rotation configured"
 }
 
 provision_services() {
@@ -383,6 +444,7 @@ main() {
   provision_packages
   provision_users
   provision_dirs
+  provision_logging
   provision_services
   provision_firewall
   verify_state

@@ -159,3 +159,28 @@ The deny rule prevented monitoring systems and external probes from reaching the
 Expected outcome:
 
 Port 3001 is no longer blocked by local firewall policy and health checks can reach the intended backend.
+
+## Remediation Step 3 — Configure Log Retention and Rotate Existing Logs
+
+Objective:
+Prevent uncontrolled application log growth and reclaim consumed disk space.
+
+Actions performed:
+
+```bash
+sudo logrotate -vf /etc/logrotate.d/kijanikiosk
+du -sh /opt/kijanikiosk/shared/logs/
+df -h /
+journalctl --disk-usage
+```
+
+Decision rationale:
+
+Historical application logs accumulated without a rotation policy, creating approximately 1.6 GB of retained data. Persistent journald storage and bounded logrotate retention were introduced to preserve incident history while preventing future disk pressure.
+
+Verification:
+
+- Rotation completed successfully
+- Compressed historical logs created
+- Journal storage persisted across reboot
+- Disk consumption reduced
