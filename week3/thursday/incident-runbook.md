@@ -113,3 +113,27 @@ confirming the service was inaccessible externally.
 ### Revised Hypothesis
 
 The incident is caused by multiple interacting failures rather than resource exhaustion. A rogue process occupied the expected application port and returned HTTP 500 responses while a firewall deny rule blocked health checks and external reachability. Separately, missing log rotation allowed uncontrolled log accumulation that increases long-term operational risk and could contribute to future I/O degradation.
+
+## Remediation Step 1 — Resolve Port Conflict
+
+Objective: Restore ownership of port 3001 to the intended `kk-payments` service.
+
+Before remediation, port 3001 was occupied by an unexpected Node.js process running from `/tmp/rogue-server.js`.
+
+Actions performed:
+
+```bash id="jv6ehd"
+sudo ss -tlnp | grep 3001
+sudo kill -TERM <PID>
+ps -p <PID>
+sudo ss -tlnp | grep 3001
+curl http://localhost:3001/
+```
+
+Decision rationale:
+
+SIGTERM was selected instead of SIGKILL because graceful termination allows cleanup, connection closure, and resource release. The process exited normally and force termination was not required.
+
+Expected outcome:
+
+Port 3001 becomes exclusively owned by the intended application and requests are routed to `kk-payments` instead of the rogue service.
