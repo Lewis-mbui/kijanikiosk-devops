@@ -30,225 +30,361 @@ error()   { echo "[$(date +%FT%T)] ERROR $*" >&2; exit 1; }
 #REQUIRE UBUNTU
 grep -qi ubuntu /etc/os-release || error "Designed for Ubuntu only"
 
-# PHASES
+####################################################
+#######       PHASE1: PROVISION PACKAGES     #######
+####################################################
 provision_packages() {
-  log "=== Phase 1: Packages ==="
+  log "=== Phase 1: Package Baseline & Drift Detection ==="
 
-  log "Updating package index"
+  command -v dpkg >/dev/null || error "dpkg missing"
+
+  ensure_package_version() {
+    local pkg="$1"
+    local expected="$2"
+
+    if dpkg -s "$pkg" >/dev/null 2>&1
+    then
+      installed=$(dpkg-query -W -f='${Version}' "$pkg")
+
+      if [[ "$installed" == "$expected" ]]
+      then
+        success "${pkg} already installed (${installed})"
+
+      else
+        error "
+          Package drift detected.
+
+          Package: ${pkg}
+          Expected: ${expected}
+          Found: ${installed}
+
+          Manual intervention required.
+        "
+      fi
+
+    else
+      log "${pkg} not installed"
+
+      DEBIAN_FRONTEND=noninteractive \
+      apt-get install -y --no-install-recommends \
+      "${pkg}=${expected}"
+
+      success "${pkg} installed (${expected})"
+    fi
+  }
+
+  log "Refreshing package metadata"
+
   apt-get update -qq
-  success "Package index updated"
-  
-  log "Installing prerequisite tools"
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  curl gnupg acl ufw logrotate
-  success "Prerequisites installed"
 
-  log "Installing NodeSource signing key"
-  # Prepare keyring directory
+  success "Package index refreshed"
+
+  log "Installing prerequisites"
+
+  DEBIAN_FRONTEND=noninteractive \
+  apt-get install -y --no-install-recommends \
+  curl \
+  gnupg \
+  acl \
+  ufw \
+  logrotate
+
+  success "Prerequisites ready"
+
+  log "Preparing NodeSource repository"
+
   mkdir -p /etc/apt/keyrings
-  chmod 0755 /etc/apt/keyrings
 
-  # Download & install NodeSource GPG key
-  curl -fsSL \
-  https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | \
-  gpg --dearmor -o \
-  /etc/apt/keyrings/nodesource.gpg
-  chmod 644 /etc/apt/keyrings/nodesource.gpg
-  success "NodeSource key installed"
+  if [[ ! -f /etc/apt/keyrings/nodesource.gpg ]]
+  then
+    curl -fsSL \
+      https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key \
+      | gpg --dearmor \
+      -o /etc/apt/keyrings/nodesource.gpg
 
-  # Add the repository referencing the specific key file
-  log "Configuring NodeSource repository"
-  echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
-  https://deb.nodesource.com/node_${NODE_MAJOR_VERSION}.x nodistro main" \
-  > /etc/apt/sources.list.d/nodesource.list
+    chmod 644 /etc/apt/keyrings/nodesource.gpg
+
+    success "NodeSource key installed"
+
+  else
+    success "NodeSource key already present"
+  fi
+
+  cat > /etc/apt/sources.list.d/nodesource.list << EOF
+deb [signed-by=/etc/apt/keyrings/nodesource.gpg] \
+https://deb.nodesource.com/node_${NODE_MAJOR_VERSION}.x \
+nodistro main
+EOF
+
   apt-get update -qq
+
   success "Repository configured"
 
-  # Install nginx and node
-  log "Installing nginx and nodejs"
-  DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  "nginx=${NGINX_VERSION}" "nodejs=${NODE_VERSION}"
+  log "Validating package versions"
 
-  # Immediately hold package versions
-  log "Holding package versions"
-  apt-mark hold nginx nodejs
+  ensure_package_version nginx "${NGINX_VERSION}"
 
-  log installed versions
-  success "nginx: $(nginx -v 2>&1)"
-  success "node: $(node --version)"
+  ensure_package_version nodejs "${NODE_VERSION}"
+
+  log "Ensuring package holds"
+
+  for pkg in nginx nodejs
+  do
+    if apt-mark showhold | grep -qx "$pkg"
+    then
+      success "${pkg} already held"
+
+    else
+      apt-mark hold "$pkg"
+
+      success "${pkg} hold applied"
+    fi
+  done
+
+  success "Phase 1 complete"
 }
 
+####################################################
+#######       PHASE2: PROVISION USERS        #######
+####################################################
 provision_users() {
-  log "=== Phase 2: Service Accounts ==="
+  log "=== Phase 2: Identity & Access Foundation ==="
 
   log "Ensuring application group exists"
-  getent group "${APP_GROUP}" >/dev/null 2>&1 || groupadd --system "${APP_GROUP}"
-  success "Group ready"
+
+  if getent group "${APP_GROUP}" >/dev/null
+  then
+    success "Group already exists: ${APP_GROUP}"
+
+  else
+    groupadd --system "${APP_GROUP}"
+
+    success "Created group: ${APP_GROUP}"
+  fi
 
   for account in kk-api kk-payments kk-logs
   do
-    log "Processing ${account}"
+    log "Reconciling account: ${account}"
 
-    if ! id "${account}" >/dev/null 2>&1
+    if id "${account}" >/dev/null 2>&1
     then
-      useradd \
-      --system \
-      --no-create-home \
-      --shell /usr/sbin/nologin \
-      --home-dir /nonexistent \
-      "${account}"
+      success "Already exists: ${account}"
 
-      success "Created ${account}"
     else
-      log "${account} already exists"
+      useradd \
+        --system \
+        --no-create-home \
+        --shell /usr/sbin/nologin \
+        --home-dir /nonexistent \
+        "${account}"
+
+      success "Created: ${account}"
     fi
 
-    usermod -aG "${APP_GROUP}" "${account}"
-    success "${account} added to ${APP_GROUP}"
+    current_shell=$(getent passwd "${account}" | cut -d: -f7)
+    current_home=$(getent passwd "${account}" | cut -d: -f6)
+
+    if [[ "$current_shell" != "/usr/sbin/nologin" ]]
+    then
+      usermod -s /usr/sbin/nologin "${account}"
+
+      success "Updated shell: ${account}"
+    fi
+
+    if [[ "$current_home" != "/nonexistent" ]]
+    then
+      usermod -d /nonexistent "${account}"
+
+      success "Updated home: ${account}"
+    fi
+
+    if id -nG "${account}" | tr ' ' '\n' | grep -qx "${APP_GROUP}"
+    then
+      success "${account} already in ${APP_GROUP}"
+
+    else
+      usermod -aG "${APP_GROUP}" "${account}"
+
+      success "${account} added to ${APP_GROUP}"
+    fi
   done
 
   if id amina >/dev/null 2>&1
   then
-    usermod -aG "${APP_GROUP}" amina
-    success "amina added to ${APP_GROUP}"
+    if id -nG amina | tr ' ' '\n' | grep -qx "${APP_GROUP}"
+    then
+      success "amina already in ${APP_GROUP}"
+
+    else
+      usermod -aG "${APP_GROUP}" amina
+
+      success "amina added to ${APP_GROUP}"
+    fi
+
   else
-    log "amina account not present - skipping"
+    log "amina account not present — skipping"
   fi
 
-  success "Service accounts complete"
+  success "Phase 2 complete"
 }
 
+####################################################
+#######       PHASE3: PROVISION DIRECTORIES  #######
+####################################################
 provision_dirs() {
-  log "=== Phase 3: Directories ==="
+  log "=== Phase 3: Directory Model & ACL Convergence ==="
 
-  log "Creting directory structure"
+  log "Ensuring directory structure"
 
-  mkdir -p "${APP_BASE}"/{api,payments,logs,config,scripts,shared/logs}
-  success "Directoryies created"
+  mkdir -p \
+    "${APP_BASE}/api" \
+    "${APP_BASE}/payments" \
+    "${APP_BASE}/logs" \
+    "${APP_BASE}/config" \
+    "${APP_BASE}/scripts" \
+    "${APP_BASE}/shared/logs" \
+    "${APP_BASE}/health"
 
-  log "Applying ownership"
-  chown kk-api:kk-api "${APP_BASE}/api"
-  chown kk-payments:kk-payments "${APP_BASE}/payments"
-  chown kk-logs:kk-logs "${APP_BASE}/logs"
+  success "Directory structure ready"
 
-  chown root:${APP_GROUP} "${APP_BASE}/config"
+  log "Applying ownership model"
 
-  chown kk-logs:kk-logs "${APP_BASE}/shared/logs"
+  chown kk-api:kk-api \
+    "${APP_BASE}/api"
+
+  chown kk-payments:kk-payments \
+    "${APP_BASE}/payments"
+
+  chown kk-logs:kk-logs \
+    "${APP_BASE}/logs"
+
+  chown root:${APP_GROUP} \
+    "${APP_BASE}/config"
+
+  chown kk-logs:${APP_GROUP} \
+    "${APP_BASE}/shared/logs"
+
+  chown kk-logs:${APP_GROUP} \
+    "${APP_BASE}/health"
+
+  success "Ownership applied"
 
   log "Applying permissions"
+
   chmod 750 "${APP_BASE}/api"
   chmod 750 "${APP_BASE}/payments"
   chmod 750 "${APP_BASE}/logs"
 
   chmod 750 "${APP_BASE}/config"
 
+  chmod 750 "${APP_BASE}/health"
+
   chmod 2770 "${APP_BASE}/shared/logs"
+
   success "Permissions applied"
 
-  log "Applying ACLs"
-  setfacl -m u:kk-api:rwx \
-  "${APP_BASE}/shared/logs"
+  log "Reconciling ACLs for shared logs"
 
-  setfacl -m u:kk-payments:r-x \
-  "${APP_BASE}/shared/logs"
+  setfacl -b "${APP_BASE}/shared/logs"
 
-  setfacl -d -m u:kk-api:rwx \
-  "${APP_BASE}/shared/logs"
+  setfacl \
+    -m u:kk-api:rwx \
+    -m u:kk-payments:r-x \
+    -m u:lewis:r-x \
+    "${APP_BASE}/shared/logs"
 
-  setfacl -d -m u:kk-payments:r-x \
-  "${APP_BASE}/shared/logs"
-  success "ACLs configured"
+  setfacl \
+    -d -m u:kk-api:rwx \
+    -d -m u:kk-payments:r-x \
+    -d -m u:lewis:r-x \
+    "${APP_BASE}/shared/logs"
+
+  success "Shared log ACLs converged"
+
+  log "Applying health directory ACL"
+
+  setfacl -b "${APP_BASE}/health"
+
+  setfacl \
+    -m u:kk-logs:rwx \
+    -m g:${APP_GROUP}:r-x \
+    "${APP_BASE}/health"
+
+  setfacl \
+    -d -m u:kk-logs:rwx \
+    -d -m g:${APP_GROUP}:r-x \
+    "${APP_BASE}/health"
+
+  success "Health ACL configured"
+
+  log "Verifying ACL inheritance"
+
+  touch "${APP_BASE}/shared/logs/.acl-test"
+
+  if getfacl "${APP_BASE}/shared/logs/.acl-test" \
+    | grep -q "user:kk-api:rwx"
+  then
+    success "Default ACL inheritance verified"
+
+  else
+    rm -f "${APP_BASE}/shared/logs/.acl-test"
+
+    error "ACL inheritance verification failed"
+  fi
+
+  rm -f "${APP_BASE}/shared/logs/.acl-test"
+
+  success "Phase 3 complete"
 }
 
-provision_logging() {
-  log "=== Phase: Logging Configuration ==="
-
-  # Enable persistent systemd journal storage
-  mkdir -p /var/log/journal
-  systemd-tmpfiles --create --prefix /var/log/journal
-
-  mkdir -p /etc/systemd/journald.conf.d
-
-  cat > /etc/systemd/journald.conf.d/kijanikiosk.conf << 'CONF'
-[Journal]
-Storage=persistent
-Compress=yes
-SystemMaxUse=500M
-SystemMaxFileSize=50M
-CONF
-
-  systemctl reload systemd-journald
-
-  success "Persistent journal configured (max 500MB)"
-
-  log "Configuring application log rotation"
-
-  cat > /etc/logrotate.d/kijanikiosk << 'EOF'
-/opt/kijanikiosk/shared/logs/*.log {
-    daily
-
-    # Daily rotation limits growth while preserving
-    # enough history for post-incident analysis.
-
-    missingok
-
-    rotate 14
-
-    compress
-
-    delaycompress
-
-    notifempty
-
-    su kk-logs kijanikiosk
-
-    create 0640 kk-logs kijanikiosk
-
-    sharedscripts
-
-    postrotate
-        systemctl reload kk-logs.service 2>/dev/null || true
-    endscript
-}
-EOF
-
-  chmod 644 /etc/logrotate.d/kijanikiosk
-
-  log "Validating logrotate configuration"
-
-  logrotate --debug /etc/logrotate.d/kijanikiosk >/dev/null
-
-  success "Application log rotation configured"
-}
-
+####################################################
+#######       PHASE4: PROVISION SERVICES     #######
+####################################################
 provision_services() {
-  log "=== Phase 4: systemd Units ==="
+  log "=== Phase 4: systemd Services ==="
 
   log "Creating environment files"
 
-  # mkdir -p "${APP_BASE}/config"
-
-  cat > "${APP_BASE}/config/db.env" << EOF
-DB_HOST=localhost
-DB_PORT=5432
-EOF
+  mkdir -p "${APP_BASE}/config"
 
   cat > "${APP_BASE}/config/api.env" << EOF
 PORT=3000
+NODE_ENV=production
 EOF
 
-  chmod 640 "${APP_BASE}/config/"*.env
-  chown root:${APP_GROUP} "${APP_BASE}/config/"*.env
+  cat > "${APP_BASE}/config/payments-api.env" << EOF
+PORT=3001
+PAYMENTS_MODE=production
+EOF
 
-  success "Environment files ready"
+  cat > "${APP_BASE}/config/logging.env" << EOF
+LOG_LEVEL=info
+EOF
+
+  chown root:${APP_GROUP} "${APP_BASE}/config/"*.env
+  chmod 640 "${APP_BASE}/config/"*.env
+
+  success "Environment files created"
+
+  log "Verifying EnvironmentFile readability"
+
+  sudo -u kk-api \
+    cat "${APP_BASE}/config/api.env" >/dev/null
+
+  sudo -u kk-payments \
+    cat "${APP_BASE}/config/payments-api.env" >/dev/null
+
+  sudo -u kk-logs \
+    cat "${APP_BASE}/config/logging.env" >/dev/null
+
+  success "Environment files readable"
 
   log "Writing kk-api.service"
 
-  cat > /etc/systemd/system/kk-api.service << 'UNIT'
+cat > /etc/systemd/system/kk-api.service << 'UNIT'
 [Unit]
-Description=KijaniKiosk API Service
-Documentation=https://github.com/kijanikiosk/api/blob/main/README.md
-After=network-online.target kk-payments.service
+Description=KijaniKiosk API
+After=network-online.target
 Wants=network-online.target
 
 [Service]
@@ -259,91 +395,225 @@ Group=kk-api
 
 WorkingDirectory=/opt/kijanikiosk/api
 
-ExecStart=/usr/bin/node /opt/kijanikiosk/api/server.js
-
-ExecReload=/bin/kill -HUP $MAINPID
-
-Restart=on-failure
-RestartSec=5s
-
-StartLimitBurst=3
-StartLimitIntervalSec=60s
-
-TimeoutStartSec=30s
-TimeoutStopSec=30s
-
-EnvironmentFile=/opt/kijanikiosk/config/db.env
 EnvironmentFile=/opt/kijanikiosk/config/api.env
 
-Environment="NODE_ENV=production"
-Environment="PORT=3000"
+ExecStart=/usr/bin/bash -c 'sleep infinity'
 
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=kk-api
+Restart=on-failure
+RestartSec=5
 
 NoNewPrivileges=true
+
 PrivateTmp=true
 
 ProtectSystem=strict
-ReadWritePaths=/opt/kijanikiosk/shared/logs
 
 ProtectHome=true
 
+ReadOnlyPaths=/opt/kijanikiosk/config
+
+ReadWritePaths=/opt/kijanikiosk/shared/logs
+
 CapabilityBoundingSet=
+
+RestrictSUIDSGID=true
+
+LockPersonality=true
+
+MemoryDenyWriteExecute=true
+
+UMask=0027
+
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target
 UNIT
 
-  success "Unit file written"
+success "kk-api.service written"
 
-  log "Reloading systemd"
+log "Writing kk-payments.service"
 
-  systemctl daemon-reload
+cat > /etc/systemd/system/kk-payments.service << 'UNIT'
+[Unit]
+Description=KijaniKiosk Payments
+After=kk-api.service
+Wants=kk-api.service
 
-  success "systemd reloaded"
+[Service]
+Type=simple
 
-  log "Enabling service"
+User=kk-payments
+Group=kk-payments
 
-  systemctl enable kk-api.service
+WorkingDirectory=/opt/kijanikiosk/payments
 
-  success "kk-api enabled (not started)"
+EnvironmentFile=/opt/kijanikiosk/config/payments-api.env
+
+ExecStart=/usr/bin/bash -c 'sleep infinity'
+
+Restart=on-failure
+
+NoNewPrivileges=true
+
+PrivateTmp=true
+
+ProtectSystem=strict
+
+ProtectHome=true
+
+ReadOnlyPaths=/opt/kijanikiosk/config
+
+ReadWritePaths=/opt/kijanikiosk/shared/logs
+
+CapabilityBoundingSet=
+
+RestrictSUIDSGID=true
+
+LockPersonality=true
+
+MemoryDenyWriteExecute=true
+
+ProtectKernelTunables=true
+
+ProtectControlGroups=true
+
+ProtectKernelModules=true
+
+ProtectClock=true
+
+UMask=0027
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+success "kk-payments.service written"
+
+log "Writing kk-logs.service"
+
+cat > /etc/systemd/system/kk-logs.service << 'UNIT'
+[Unit]
+Description=KijaniKiosk Logging
+
+[Service]
+Type=simple
+
+User=kk-logs
+Group=kk-logs
+
+WorkingDirectory=/opt/kijanikiosk/logs
+
+EnvironmentFile=/opt/kijanikiosk/config/logging.env
+
+ExecStart=/usr/bin/bash -c 'sleep infinity'
+
+Restart=always
+
+NoNewPrivileges=true
+
+PrivateTmp=true
+
+ProtectSystem=strict
+
+ProtectHome=true
+
+ReadWritePaths=/opt/kijanikiosk/shared/logs
+
+CapabilityBoundingSet=
+
+RestrictSUIDSGID=true
+
+LockPersonality=true
+
+UMask=0027
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+success "kk-logs.service written"
+
+log "Reloading systemd"
+
+systemctl daemon-reload
+
+success "systemd reloaded"
+
+log "Enabling units"
+
+systemctl enable kk-api.service
+systemctl enable kk-payments.service
+systemctl enable kk-logs.service
+
+success "Units enabled"
+
+log "Validating units"
+
+systemctl cat kk-api.service >/dev/null
+systemctl cat kk-payments.service >/dev/null
+systemctl cat kk-logs.service >/dev/null
+
+success "Phase 4 complete"
 }
 
+####################################################
+#######       PHASE5: PROVISION FIREWALL     #######
+####################################################
 provision_firewall() {
   # Do not deny port 3001.
   # Monitoring and health checks require access to validate backend availability.
-  log "=== Phase 5: Firewall ==="
+  log "=== Phase 5: Firewall Intent Model ==="
 
-  command -v ufw >/dev/null 2>&1 || \
-  error "ufw is not installed"
+  command -v ufw >/dev/null \
+    || error "ufw not installed"
 
-  log "Resetting firewall"
+  log "Resetting firewall state"
 
   ufw --force reset
 
   success "Firewall reset"
 
-  log "Applying default policies"
+  log "Applying default policy"
 
   ufw default deny incoming
 
   ufw default allow outgoing
 
-  success "Default policies applied"
+  success "Defaults applied"
 
   log "Allowing SSH"
 
-  ufw allow 22/tcp
+  ufw allow 22/tcp comment 'Remote administration'
 
-  success "SSH allowed"
+  success "SSH rule applied"
 
   log "Allowing HTTP"
 
-  ufw allow 80/tcp
+  ufw allow 80/tcp comment 'Public web traffic'
 
-  success "HTTP allowed"
+  success "HTTP rule applied"
+
+  log "Allow monitoring subnet access"
+
+  ufw allow from 10.0.1.0/24 to any port 3001 \
+    comment 'Payments health monitoring'
+
+  success "Monitoring access rule applied"
+
+  log "Denying external access to payments"
+
+  ufw deny 3001/tcp \
+    comment 'Payments internal only'
+
+  success "External deny applied"
 
   log "Enabling firewall"
 
@@ -355,27 +625,263 @@ provision_firewall() {
 
   ufw status verbose
 
-  success "Firewall configured"
+  success "Phase 5 complete"
 }
 
+####################################################
+#######       PHASE6: PROVISION LOGGING     #######
+####################################################
+provision_logging() {
+  log "=== Phase 6: Journal Persistence & Log Rotation ==="
+
+  log "Configuring persistent journal"
+
+  mkdir -p /var/log/journal
+
+  mkdir -p /etc/systemd/journald.conf.d
+
+cat > /etc/systemd/journald.conf.d/kijanikiosk.conf << 'CONF'
+[Journal]
+Storage=persistent
+Compress=yes
+SystemMaxUse=500M
+SystemMaxFileSize=50M
+CONF
+
+  systemd-tmpfiles --create --prefix /var/log/journal
+
+  systemctl restart systemd-journald
+
+  success "Persistent journal configured"
+
+  log "Writing logrotate policy"
+
+cat > /etc/logrotate.d/kijanikiosk << 'ROTATE'
+/opt/kijanikiosk/shared/logs/*.log {
+
+daily
+
+rotate 14
+
+compress
+
+delaycompress
+
+missingok
+
+notifempty
+
+sharedscripts
+
+su kk-logs kijanikiosk
+
+create 0640 kk-logs kijanikiosk
+
+postrotate
+systemctl try-restart kk-logs.service >/dev/null 2>&1 || true
+endscript
+
+}
+ROTATE
+
+  chmod 644 /etc/logrotate.d/kijanikiosk
+
+  success "Logrotate configuration written"
+
+  log "Validating logrotate"
+
+  if logrotate --debug /etc/logrotate.d/kijanikiosk >/dev/null
+  then
+    success "logrotate debug passed"
+
+  else
+    error "logrotate validation failed"
+  fi
+
+  log "Creating verification log"
+
+  mkdir -p "${APP_BASE}/shared/logs"
+
+  touch "${APP_BASE}/shared/logs/verification.log"
+
+  chown kk-logs:${APP_GROUP} \
+    "${APP_BASE}/shared/logs/verification.log"
+
+  chmod 640 \
+    "${APP_BASE}/shared/logs/verification.log"
+
+  success "Verification log created"
+
+  log "Forcing rotation"
+
+  logrotate --force \
+    /etc/logrotate.d/kijanikiosk
+
+  success "Rotation executed"
+
+  log "Verifying ACL survival"
+
+  sudo -u kk-api \
+    touch \
+    "${APP_BASE}/shared/logs/test-write.tmp"
+
+  if [[ -f "${APP_BASE}/shared/logs/test-write.tmp" ]]
+  then
+    success "PASS kk-api can write after rotation"
+
+  else
+    error "FAIL kk-api lost write access"
+  fi
+
+  rm -f \
+    "${APP_BASE}/shared/logs/test-write.tmp"
+
+  log "Checking journal size"
+
+  usage=$(journalctl --disk-usage)
+
+  success "${usage}"
+
+  success "Phase 6 complete"
+}
+
+####################################################
+########   PHASE7: PROVISION HEALTH CHECKS  ########
+####################################################
+provision_health_checks() {
+  log "=== Phase 7: Monitoring Health Checks ==="
+
+  log "Preparing health directory"
+
+  mkdir -p \
+    "${APP_BASE}/health"
+
+  chown \
+    kk-logs:${APP_GROUP} \
+    "${APP_BASE}/health"
+
+  chmod 750 \
+    "${APP_BASE}/health"
+
+  success "Health directory ready"
+
+  check_port() {
+
+    local port="$1"
+
+    if timeout 2 \
+      bash -c \
+      "echo >/dev/tcp/127.0.0.1/${port}" \
+      2>/dev/null
+    then
+      echo '"ok"'
+
+    else
+      echo '"down"'
+    fi
+  }
+
+  log "Checking service ports"
+
+  api_status=$(check_port 3000)
+
+  payments_status=$(check_port 3001)
+
+  success "API status: ${api_status}"
+
+  success "Payments status: ${payments_status}"
+
+  log "Writing health JSON"
+
+  printf \
+'{"timestamp":"%s","kk-api":%s,"kk-payments":%s}\n' \
+"$(date -Is)" \
+"${api_status}" \
+"${payments_status}" \
+> "${APP_BASE}/health/last-provision.json"
+
+  chown \
+    kk-logs:${APP_GROUP} \
+    "${APP_BASE}/health/last-provision.json"
+
+  chmod 640 \
+    "${APP_BASE}/health/last-provision.json"
+
+  success "Health JSON written"
+
+  log "Verifying health artifact"
+
+  if [[ ! -f \
+    "${APP_BASE}/health/last-provision.json" ]]
+  then
+    error "Health JSON missing"
+  fi
+
+  if sudo -u kk-api \
+    cat \
+    "${APP_BASE}/health/last-provision.json" \
+    >/dev/null
+  then
+    success "Health file readable"
+
+  else
+    error "Health file unreadable"
+  fi
+
+  success "Phase 7 complete"
+}
+
+####################################################
+#######       PHASE8: STATE VERIFICATION     #######
+####################################################
 verify_state() {
-  log "=== Phase 6: Post-Provision Verification ==="
+  log "=== Phase 8: Full Provision Verification ==="
 
   local failed=0
+  local passed=0
 
-  log "Verifying service accounts"
+  pass() {
+    success "PASS $1"
+    ((passed+=1))
+  }
 
-  for account in kk-api kk-payments kk-logs
-  do
-    if id "${account}" >/dev/null 2>&1
+  fail() {
+    echo "FAIL $1"
+    ((failed+=1))
+  }
+
+  check() {
+    local description="$1"
+
+    if eval "$2"
     then
-      success "Account exists: ${account}"
-    else
-      error_msg="Account missing: ${account}"
-      echo "$error_msg"
+      pass "$description"
 
-      ((failed++))
+    else
+      fail "$description"
     fi
+  }
+
+  log "Verifying package state"
+
+  check \
+  "nginx hold active" \
+  "apt-mark showhold | grep -qx nginx"
+
+  check \
+  "nodejs hold active" \
+  "apt-mark showhold | grep -qx nodejs"
+
+  log "Verifying users"
+
+  for user in \
+    kk-api \
+    kk-payments \
+    kk-logs
+  do
+    check \
+    "${user} exists" \
+    "id ${user} >/dev/null 2>&1"
   done
 
   log "Verifying directories"
@@ -386,81 +892,127 @@ verify_state() {
     logs \
     config \
     scripts \
-    shared/logs
+    shared/logs \
+    health
   do
 
-    if [[ -d "${APP_BASE}/${dir}" ]]
-    then
-      success "Directory exists: ${dir}"
-    else
-      echo "Missing directory: ${dir}"
-
-      ((failed++))
-    fi
-
+    check \
+    "directory ${dir}" \
+    "[[ -d ${APP_BASE}/${dir} ]]"
   done
 
-  log "Checking SUID files"
+  log "Verifying ACL"
 
-  if find "${APP_BASE}" -perm /4000 | grep . >/dev/null
-  then
-    echo "Unexpected SUID files found"
+  check \
+  "kk-api ACL exists" \
+  "getfacl ${APP_BASE}/shared/logs | grep -q 'user:kk-api:rwx'"
 
-    ((failed++))
-  else
-    success "No SUID files present"
-  fi
+  check \
+  "kk-payments ACL exists" \
+  "getfacl ${APP_BASE}/shared/logs | grep -q 'user:kk-payments:r-x'"
 
-  log "Checking package holds"
+  log "Verifying environment readability"
 
-  if apt-mark showhold | grep -q "^nginx$"
-  then
-    success "nginx held"
-  else
-    echo "nginx hold missing"
+  check \
+  "api env readable" \
+  "sudo -u kk-api cat ${APP_BASE}/config/api.env >/dev/null"
 
-    ((failed++))
-  fi
+  check \
+  "payments env readable" \
+  "sudo -u kk-payments cat ${APP_BASE}/config/payments-api.env >/dev/null"
 
-  if apt-mark showhold | grep -q "^nodejs$"
-  then
-    success "nodejs held"
-  else
-    echo "nodejs hold missing"
+  check \
+  "logging env readable" \
+  "sudo -u kk-logs cat ${APP_BASE}/config/logging.env >/dev/null"
 
-    ((failed++))
-  fi
+  log "Verifying systemd"
 
-  log "Checking service enablement"
+  check \
+  "kk-api enabled" \
+  "systemctl is-enabled kk-api.service >/dev/null"
 
-  if systemctl is-enabled kk-api.service >/dev/null 2>&1
-  then
-    success "kk-api enabled"
-  else
-    echo "kk-api not enabled"
+  check \
+  "kk-payments enabled" \
+  "systemctl is-enabled kk-payments.service >/dev/null"
 
-    ((failed++))
-  fi
+  check \
+  "kk-logs enabled" \
+  "systemctl is-enabled kk-logs.service >/dev/null"
+
+  log "Verifying journal"
+
+  check \
+  "journal persistent configured" \
+  "[[ -f /etc/systemd/journald.conf.d/kijanikiosk.conf ]]"
+
+  log "Verifying logrotate"
+
+  check \
+  "logrotate config exists" \
+  "[[ -f /etc/logrotate.d/kijanikiosk ]]"
+
+  check \
+  "logrotate debug passes" \
+  "logrotate --debug /etc/logrotate.d/kijanikiosk >/dev/null"
+
+  log "Verifying firewall"
+
+  fw=$(ufw status)
+
+  echo "$fw" | grep -q "22/tcp"
+
+  [[ $? -eq 0 ]] \
+    && pass "ssh allowed" \
+    || fail "ssh rule"
+
+  echo "$fw" | grep -q "80/tcp"
+
+  [[ $? -eq 0 ]] \
+    && pass "http allowed" \
+    || fail "http rule"
+
+  echo "$fw" | grep -q "3001"
+
+  [[ $? -eq 0 ]] \
+    && pass "payments rule present" \
+    || fail "payments rule"
+
+  log "Verifying health"
+
+  check \
+  "health json exists" \
+  "[[ -f ${APP_BASE}/health/last-provision.json ]]"
+
+  check \
+  "health readable" \
+  "sudo -u kk-api cat ${APP_BASE}/health/last-provision.json >/dev/null"
+
+  echo
+
+  success "Verification summary"
+
+  echo "Passed: ${passed}"
+  echo "Failed: ${failed}"
 
   if [[ "$failed" -gt 0 ]]
   then
-    error "Verification failed (${failed} issue(s))"
+    error "Verification failed"
   fi
 
-  success "Verification passed"
+  success "Phase 8 complete"
 }
 
-#ENTRY
+
 main() {
   provision_packages
   provision_users
   provision_dirs
-  provision_logging
   provision_services
   provision_firewall
+  provision_logging
+  provision_health_checks
   verify_state
-
-  success "Provisioning complete. Server is in known state."
+  success "Provisioning complete"
 }
 
 main "$@"
