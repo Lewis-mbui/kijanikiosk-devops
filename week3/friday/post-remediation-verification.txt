@@ -1,0 +1,33 @@
+POST REMEDIATION VERIFICATION
+
+===== SERVICE STATUS =====
+kk-api: active
+security score: 2.5 OK 🙂
+
+kk-payments: active
+security score: 1.9 OK 🙂
+
+kk-logs: active
+security score: 3.3 OK 🙂
+
+===== LOGROTATE =====
+PASS logrotate debug
+
+===== ACCESS MODEL =====
+PASS kk-api retained write access
+
+===== HEALTH =====
+PASS health file exists
+
+===== FIREWALL =====
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere                   # Remote administration
+[ 2] 80/tcp                     ALLOW IN    Anywhere                   # Public web traffic
+[ 3] 3001                       ALLOW IN    10.0.1.0/24                # Payments health monitoring
+[ 4] 3001/tcp                   DENY IN     Anywhere                   # Payments internal only
+[ 5] 22/tcp (v6)                ALLOW IN    Anywhere (v6)              # Remote administration
+[ 6] 80/tcp (v6)                ALLOW IN    Anywhere (v6)              # Public web traffic
+[ 7] 3001/tcp (v6)              DENY IN     Anywhere (v6)              # Payments internal only
