@@ -1,0 +1,16 @@
+service_group: kijanikiosk
+
+base_dir: /opt/kijanikiosk
+
+log_dir: /opt/kijanikiosk/shared/logs
+
+node_major_version: 22
+
+node_version: "22.23.0-1nodesource1"
+
+nginx_version: "1.24.0-2ubuntu7.13"
+
+service_accounts:
+  - kk-api
+  - kk-payments
+  - kk-logs

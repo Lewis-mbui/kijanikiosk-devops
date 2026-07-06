@@ -1,0 +1,27 @@
+---
+- name: Deploy environment file
+  ansible.builtin.template:
+    src: "{{ env_template }}"
+    dest: "{{ base_dir }}/config/{{ env_file }}"
+    owner: root
+    group: "{{ service_group }}"
+    mode: "0640"
+
+- name: Deploy systemd unit
+  ansible.builtin.template:
+    src: "{{ service_template }}"
+    dest: "/etc/systemd/system/{{ service_name }}.service"
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart service
+
+- name: Enable and start service
+  ansible.builtin.systemd:
+    name: "{{ service_name }}"
+    enabled: true
+    state: started
+    daemon_reload: true
+  when: not ansible_check_mode

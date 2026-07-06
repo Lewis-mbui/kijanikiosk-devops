@@ -1,0 +1,124 @@
+- name: Create KijaniKiosk directory structure
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - path: "{{ base_dir }}/api"
+      owner: kk-api
+      group: kk-api
+      mode: "0750"
+
+    - path: "{{ base_dir }}/payments"
+      owner: kk-payments
+      group: kk-payments
+      mode: "0750"
+
+    - path: "{{ base_dir }}/logs"
+      owner: kk-logs
+      group: kk-logs
+      mode: "0750"
+
+    - path: "{{ base_dir }}/config"
+      owner: root
+      group: "{{ service_group }}"
+      mode: "0750"
+
+    - path: "{{ base_dir }}/scripts"
+      owner: root
+      group: root
+      mode: "0755"
+
+    - path: "{{ base_dir }}/shared"
+      owner: root
+      group: root
+      mode: "0755"
+
+    - path: "{{ log_dir }}"
+      owner: kk-logs
+      group: "{{ service_group }}"
+      mode: "2770"
+
+    - path: "{{ base_dir }}/health"
+      owner: kk-logs
+      group: "{{ service_group }}"
+      mode: "0750"
+
+# -----------------------------------------------------
+# Shared log ACLs
+# -----------------------------------------------------
+
+- name: Configure shared log ACLs
+  ansible.posix.acl:
+    path: "{{ log_dir }}"
+    entity: "{{ item.entity }}"
+    etype: "{{ item.etype }}"
+    permissions: "{{ item.permissions }}"
+    state: present
+    default: "{{ item.default | default(false) }}"
+  loop:
+    # Normal ACLs
+    - entity: kk-api
+      etype: user
+      permissions: rwx
+
+    - entity: kk-payments
+      etype: user
+      permissions: r-x
+
+    - entity: ubuntu
+      etype: user
+      permissions: r-x
+
+    # Default ACLs
+    - entity: kk-api
+      etype: user
+      permissions: rwx
+      default: true
+
+    - entity: kk-payments
+      etype: user
+      permissions: r-x
+      default: true
+
+    - entity: ubuntu
+      etype: user
+      permissions: r-x
+      default: true
+  when: not ansible_check_mode
+
+# -----------------------------------------------------
+# Health directory ACLs
+# -----------------------------------------------------
+
+- name: Configure health directory ACLs
+  ansible.posix.acl:
+    path: "{{ base_dir }}/health"
+    entity: "{{ item.entity }}"
+    etype: "{{ item.etype }}"
+    permissions: "{{ item.permissions }}"
+    state: present
+    default: "{{ item.default | default(false) }}"
+  loop:
+    # Normal ACLs
+    - entity: kk-logs
+      etype: user
+      permissions: rwx
+
+    - entity: "{{ service_group }}"
+      etype: group
+      permissions: r-x
+
+    # Default ACLs
+    - entity: kk-logs
+      etype: user
+      permissions: rwx
+      default: true
+
+    - entity: "{{ service_group }}"
+      etype: group
+      permissions: r-x
+      default: true
+  when: not ansible_check_mode

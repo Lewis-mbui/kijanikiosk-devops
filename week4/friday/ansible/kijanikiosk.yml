@@ -1,0 +1,44 @@
+---
+- name: Configure KijaniKiosk servers
+  hosts: kijanikiosk
+  become: true
+  become_method: sudo
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart service
+      ansible.builtin.systemd:
+        name: "{{ service_name }}.service"
+        state: restarted
+      when: service_exists | default(false)
+
+    - name: Restart journald
+      ansible.builtin.systemd:
+        name: systemd-journald
+        state: restarted
+      when: not ansible_check_mode
+
+  tasks:
+    - name: Phase 1 - Packages
+      ansible.builtin.import_tasks: tasks/packages.yml
+
+    - name: Phase 2 - Users
+      ansible.builtin.import_tasks: tasks/users.yml
+
+    - name: Phase 3 - Directories
+      ansible.builtin.import_tasks: tasks/directories.yml
+
+    - name: Phase 4 - Services
+      ansible.builtin.import_tasks: tasks/services.yml
+
+    - name: Phase 5 - Firewall
+      ansible.builtin.import_tasks: tasks/firewall.yml
+
+    - name: Phase 6 - Journal Persistence
+      ansible.builtin.import_tasks: tasks/journald.yml
+
+    - name: Phase 7 - Logrotate
+      ansible.builtin.import_tasks: tasks/logrotate.yml
