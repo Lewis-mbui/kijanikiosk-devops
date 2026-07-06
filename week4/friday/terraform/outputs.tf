@@ -1,12 +1,3 @@
-output "instance_ids" {
-  description = "Instance IDs of all application servers."
-
-  value = {
-    for name, server in module.app_servers :
-    name => server.instance_id
-  }
-}
-
 output "public_ips" {
   description = "Public IP addresses of all application servers."
 
@@ -16,11 +7,11 @@ output "public_ips" {
   }
 }
 
-output "private_ips" {
-  description = "Private IP addresses of all application servers."
+output "ssh_commands" {
+  description = "SSH commands for all application servers."
 
   value = {
     for name, server in module.app_servers :
-    name => server.private_ip
+    name => "ssh -i ~/.ssh/${var.key_name}.pem ubuntu@${server.public_ip}"
   }
 }
