@@ -1,0 +1,43 @@
+---
+- name: Set default incoming policy
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Set default outgoing policy
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Allow SSH
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+    comment: "Remote administration"
+
+- name: Allow HTTP
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+    comment: "Public web traffic"
+
+- name: Allow monitoring subnet to payments
+  community.general.ufw:
+    rule: allow
+    src: 10.0.1.0/24
+    port: "3001"
+    proto: tcp
+    comment: "Payments health monitoring"
+
+- name: Deny external access to payments
+  community.general.ufw:
+    rule: deny
+    port: "3001"
+    proto: tcp
+    comment: "Payments internal only"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

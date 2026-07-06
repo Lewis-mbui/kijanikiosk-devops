@@ -1,0 +1,7 @@
+service_name: kk-api
+service_port: 3000
+
+env_file: api.env
+env_template: api.env.j2
+service_template: kk-api.service.j2
+working_directory: api
