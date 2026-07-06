@@ -9,42 +9,52 @@ Type=simple
 User=kk-payments
 Group=kk-payments
 
-WorkingDirectory=/opt/kijanikiosk/payments
-
-EnvironmentFile=/opt/kijanikiosk/config/payments-api.env
+WorkingDirectory={{ base_dir }}/{{ working_directory }}
+EnvironmentFile={{ base_dir }}/config/{{ env_file }}
 
 ExecStart=/usr/bin/bash -c 'sleep infinity'
 
 Restart=on-failure
 
 NoNewPrivileges=true
-
 PrivateTmp=true
+PrivateDevices=true
+PrivateUsers=true
 
 ProtectSystem=strict
-
 ProtectHome=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
 
-ReadOnlyPaths=/opt/kijanikiosk/config
+ProcSubset=pid
 
-ReadWritePaths=/opt/kijanikiosk/shared/logs
+ReadOnlyPaths={{ base_dir }}/config
+ReadWritePaths={{ log_dir }}
 
 CapabilityBoundingSet=
+AmbientCapabilities=
 
 RestrictSUIDSGID=true
+RestrictRealtime=true
+RestrictNamespaces=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
 
 LockPersonality=true
-
 MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
 
-ProtectKernelTunables=true
+SystemCallFilter=~@clock
+SystemCallFilter=~@debug
+SystemCallFilter=~@module
+SystemCallFilter=~@mount
+SystemCallFilter=~@obsolete
 
-ProtectControlGroups=true
-
-ProtectKernelModules=true
-
-ProtectClock=true
-
+RemoveIPC=true
 UMask=0027
 
 StandardOutput=journal
