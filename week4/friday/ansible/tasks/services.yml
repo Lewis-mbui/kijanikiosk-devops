@@ -18,11 +18,11 @@
     - Reload systemd
     - Restart service
 
-- name: Reset failed service state
-  ansible.builtin.command:
-    cmd: "systemctl reset-failed {{ service_name }}"
-  changed_when: false
-  when: not ansible_check_mode
+# - name: Reset failed service state
+#   ansible.builtin.command:
+#     cmd: "systemctl reset-failed {{ service_name }}"
+#   changed_when: false
+#   when: not ansible_check_mode
 
 - name: Enable and start service
   ansible.builtin.systemd:
