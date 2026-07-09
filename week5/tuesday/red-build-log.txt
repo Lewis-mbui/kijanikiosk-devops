@@ -1,0 +1,144 @@
+Started by GitHub push by Lewis-mbui
+Obtained Jenkinsfile from git https://github.com/Lewis-mbui/kijanikiosk-payments.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins in /var/lib/jenkins/workspace/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Lewis-mbui/kijanikiosk-payments.git
+ > git init /var/lib/jenkins/workspace/kijanikiosk-payments # timeout=10
+Fetching upstream changes from https://github.com/Lewis-mbui/kijanikiosk-payments.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+ > git fetch --tags --force --progress -- https://github.com/Lewis-mbui/kijanikiosk-payments.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Lewis-mbui/kijanikiosk-payments.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision bfc637e020c3a86a79e3aef1a5eaf2af52739072 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f bfc637e020c3a86a79e3aef1a5eaf2af52739072 # timeout=10
+Commit message: "test: add deliberate CI failure"
+ > git rev-list --no-walk 6ba78d8f82a9695400cf4a3cf01806830b070fbe # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] echo
+Installing dependencies for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 362 packages, and audited 363 packages in 9s
+
+70 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[Pipeline] echo
+Building application...
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@1.0.0 build
+> rm -rf dist && mkdir -p dist && cp -r src/* dist/
+
+[Pipeline] echo
+Verifying build output...
+[Pipeline] sh
++ set -e
++ test -d dist
++ find dist -type f
++ wc -l
++ FILE_COUNT=1
++ echo Build output: 1 files in dist/
+Build output: 1 files in dist/
++ test 1 -gt 0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] echo
+Running test suite for kijanikiosk-payments...
+[Pipeline] sh
++ set -e
++ npm test
+
+> kijanikiosk-payments@1.0.0 test
+> jest --ci --reporters=default --reporters=jest-junit
+
+FAIL tests/payments.test.js
+  ✓ calculates payment total (3 ms)
+  ✓ creates a pending payment (1 ms)
+  ✓ rejects invalid payment amount (12 ms)
+  ✕ ci-pipeline-verification: deliberate failure (3 ms)
+
+  ● ci-pipeline-verification: deliberate failure
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+
+    [0m [90m 28 |[39m
+     [90m 29 |[39m test([32m'ci-pipeline-verification: deliberate failure'[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 30 |[39m   expect([36mtrue[39m)[33m.[39mtoBe([36mfalse[39m)[33m;[39m
+     [90m    |[39m                [31m[1m^[22m[39m
+     [90m 31 |[39m })[33m;[39m[0m
+
+      at Object.toBe (tests/payments.test.js:30:16)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 3 passed, 4 total
+Snapshots:   0 total
+Time:        0.903 s, estimated 1 s
+Ran all test suites.
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+Stage "Archive" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+FAILURE: kijanikiosk-payments build #3 failed. Check the console log for the failed stage.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE
