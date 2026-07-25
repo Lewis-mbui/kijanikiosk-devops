@@ -193,6 +193,35 @@ deploy_artifact() {
 }
 
 # ---------------------------------------------------------------------------
+# Phase 4: Restart
+# ---------------------------------------------------------------------------
+
+restart_service() {
+  log "=== Phase 4: Restart ${DEPLOY_ENV} service ==="
+
+  local service_name="kk-api-${DEPLOY_ENV}.service"
+
+  if [ "${DEPLOY_CHANGED}" != "true" ]; then
+    log "No deployment change detected; restart skipped"
+    return 0
+  fi
+
+  systemctl restart "${service_name}" || {
+    log_fail "Phase 4 FAILED: Could not restart ${service_name}"
+    systemctl status "${service_name}" --no-pager >&2 || true
+    exit 1
+  }
+
+  if ! systemctl is-active --quiet "${service_name}"; then
+    log_fail "Phase 4 FAILED: ${service_name} is not active after restart"
+    systemctl status "${service_name}" --no-pager >&2 || true
+    exit 1
+  fi
+
+  log "Restarted ${service_name} successfully"
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -206,10 +235,11 @@ main() {
   fetch_artifact
   validate_artifact
   deploy_artifact
+  restart_service
 
   echo
   log "Deployment changed: ${DEPLOY_CHANGED}"
-  log "Phase 3 test complete"
+  log "Phase 4 test complete"
 }
 
 main "$@"
