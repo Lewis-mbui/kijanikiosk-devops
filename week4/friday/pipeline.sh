@@ -63,6 +63,12 @@ cat "$INVENTORY_FILE"
 
 cd "$ANSIBLE_DIR"
 
+echo "=== Waiting for EC2 instances to become reachable ==="
+ansible all \
+  -i "$INVENTORY_FILE" \
+  -m ansible.builtin.wait_for_connection \
+  -a "timeout=600 connect_timeout=10 sleep=10"
+
 echo "=== Testing Ansible connectivity ==="
 ansible all -i inventory.ini -m ping
 
