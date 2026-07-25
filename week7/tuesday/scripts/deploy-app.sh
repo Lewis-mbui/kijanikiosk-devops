@@ -222,6 +222,57 @@ restart_service() {
 }
 
 # ---------------------------------------------------------------------------
+# Phase 5: Verify
+# ---------------------------------------------------------------------------
+
+verify_service() {
+  log "=== Phase 5: Verify ${DEPLOY_ENV} service health ==="
+
+  local port="${BLUE_PORT}"
+  local service_name="kk-api-blue.service"
+
+  if [ "${DEPLOY_ENV}" = "green" ]; then
+    port="${GREEN_PORT}"
+    service_name="kk-api-green.service"
+  fi
+
+  local health_url="http://127.0.0.1:${port}/health"
+  local retries=0
+  local response=""
+
+  while [ "${retries}" -lt 10 ]; do
+    if response=$(curl -fsS --max-time 5 "${health_url}" 2>/dev/null); then
+      if echo "${response}" |
+        grep -q "\"version\":\"${APP_VERSION}\""; then
+        log "Health check passed: ${health_url} returned version ${APP_VERSION}"
+        return 0
+      fi
+
+      log "Health check responded but version did not match: ${response}"
+    else
+      log "Health check attempt $((retries + 1)) failed"
+    fi
+
+    sleep 3
+    retries=$((retries + 1))
+  done
+
+  log_fail "Phase 5 FAILED: Health check did not pass after $((retries * 3)) seconds"
+  log_fail "URL: ${health_url}"
+  log_fail "Expected version: ${APP_VERSION}"
+
+  echo >&2
+  echo "Recent ${service_name} journal entries:" >&2
+
+  journalctl \
+    -u "${service_name}" \
+    -n 20 \
+    --no-pager >&2 || true
+
+  exit 1
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -236,10 +287,11 @@ main() {
   validate_artifact
   deploy_artifact
   restart_service
+  verify_service
 
   echo
   log "Deployment changed: ${DEPLOY_CHANGED}"
-  log "Phase 4 test complete"
+  log "Deployment completed successfully"
 }
 
 main "$@"
