@@ -88,6 +88,111 @@ fetch_artifact() {
 }
 
 # ---------------------------------------------------------------------------
+# Phase 2: Validate
+# ---------------------------------------------------------------------------
+
+validate_artifact() {
+  log "=== Phase 2: Validate artifact ==="
+
+  local staging_dir="${RELEASES_DIR}/staging-${APP_VERSION}"
+
+  if [ ! -s "${ARTIFACT_PATH}" ]; then
+    log_fail "Phase 2 FAILED: Artifact file is missing or empty: ${ARTIFACT_PATH}"
+    exit 1
+  fi
+
+  log "Artifact exists and is non-empty"
+
+  if [ -s "${CHECKSUM_PATH}" ]; then
+    (
+      cd "${RELEASES_DIR}"
+      sha256sum -c "$(basename "${CHECKSUM_PATH}")"
+    ) || {
+      log_fail "Phase 2 FAILED: Checksum mismatch on ${ARTIFACT_PATH}"
+      exit 1
+    }
+
+    log "Checksum validation passed"
+  else
+    log "No checksum file available; skipping checksum validation"
+  fi
+
+  rm -rf "${staging_dir}"
+  mkdir -p "${staging_dir}"
+
+  tar xzf "${ARTIFACT_PATH}" -C "${staging_dir}" || {
+    rm -rf "${staging_dir}"
+    log_fail "Phase 2 FAILED: Could not extract ${ARTIFACT_PATH}"
+    exit 1
+  }
+
+  if [ ! -f "${staging_dir}/server.js" ]; then
+    rm -rf "${staging_dir}"
+    log_fail "Phase 2 FAILED: server.js not found in artifact"
+    exit 1
+  fi
+
+  log "Artifact valid: extraction succeeded and server.js is present"
+}
+
+# ---------------------------------------------------------------------------
+# Phase 3: Deploy
+# ---------------------------------------------------------------------------
+
+deploy_artifact() {
+  log "=== Phase 3: Deploy to ${DEPLOY_ENV} ==="
+
+  local target_dir="/opt/kijanikiosk/${DEPLOY_ENV}"
+  local app_dir="${target_dir}/app"
+  local version_file="${target_dir}/.version"
+  local staging_dir="${RELEASES_DIR}/staging-${APP_VERSION}"
+  local current_version=""
+
+  if [ -f "${version_file}" ]; then
+    current_version=$(<"${version_file}")
+  fi
+
+  if [ "${current_version}" = "${APP_VERSION}" ] &&
+     [ -f "${app_dir}/server.js" ]; then
+    log "${DEPLOY_ENV} already runs ${APP_VERSION}; deployment skipped"
+    DEPLOY_CHANGED=false
+    return 0
+  fi
+
+  if [ ! -f "${staging_dir}/server.js" ]; then
+    log_fail "Phase 3 FAILED: Validated staging content is missing"
+    exit 1
+  fi
+
+  mkdir -p "${target_dir}"
+
+  rm -rf "${app_dir}.new"
+  mkdir -p "${app_dir}.new"
+
+  cp -a "${staging_dir}/." "${app_dir}.new/"
+
+  chown -R kk-api:kk-api "${app_dir}.new"
+
+  rm -rf "${app_dir}.previous"
+
+  if [ -d "${app_dir}" ]; then
+    mv "${app_dir}" "${app_dir}.previous"
+  fi
+
+  mv "${app_dir}.new" "${app_dir}"
+
+  printf '%s\n' "${APP_VERSION}" > "${version_file}"
+  chown kk-api:kk-api "${version_file}"
+  chmod 0640 "${version_file}"
+
+  rm -rf "${app_dir}.previous"
+
+  DEPLOY_CHANGED=true
+
+  log "Deployed ${APP_VERSION} to ${app_dir}"
+}
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -99,9 +204,12 @@ main() {
   echo
 
   fetch_artifact
+  validate_artifact
+  deploy_artifact
 
   echo
-  log "Phase 1 test complete"
+  log "Deployment changed: ${DEPLOY_CHANGED}"
+  log "Phase 3 test complete"
 }
 
 main "$@"
