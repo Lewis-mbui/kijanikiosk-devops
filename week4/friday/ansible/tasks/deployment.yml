@@ -1,0 +1,34 @@
+---
+- name: Deploy application deployment script
+  ansible.builtin.copy:
+    src: deploy-app.sh
+    dest: "{{ base_dir }}/scripts/deploy-app.sh"
+    owner: root
+    group: "{{ service_group }}"
+    mode: "0750"
+  tags:
+    - deployment
+
+- name: Deploy blue API systemd unit
+  ansible.builtin.template:
+    src: kk-api-blue.service.j2
+    dest: /etc/systemd/system/kk-api-blue.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "api-staging"
+  notify: Reload systemd
+  tags:
+    - deployment
+
+- name: Deploy green API systemd unit
+  ansible.builtin.template:
+    src: kk-api-green.service.j2
+    dest: /etc/systemd/system/kk-api-green.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "api-staging"
+  notify: Reload systemd
+  tags:
+    - deployment

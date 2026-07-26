@@ -36,13 +36,28 @@
 
     - path: "{{ base_dir }}/scripts"
       owner: root
-      group: root
-      mode: "0755"
+      group: "{{ service_group }}"
+      mode: "0750"
 
     - path: "{{ base_dir }}/shared"
       owner: root
       group: root
       mode: "0755"
+
+    - path: "{{ base_dir }}/blue"
+      owner: kk-api
+      group: "{{ service_group }}"
+      mode: "0750"
+
+    - path: "{{ base_dir }}/green"
+      owner: kk-api
+      group: "{{ service_group }}"
+      mode: "0750"
+
+    - path: "{{ base_dir }}/releases"
+      owner: kk-api
+      group: "{{ service_group }}"
+      mode: "0750"
 
     - path: "{{ log_dir }}"
       owner: kk-logs
