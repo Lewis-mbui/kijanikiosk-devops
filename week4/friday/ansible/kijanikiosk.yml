@@ -21,6 +21,14 @@
         state: restarted
       when: not ansible_check_mode
 
+    - name: Validate and reload nginx
+      ansible.builtin.shell:
+        cmd: nginx -t && systemctl reload nginx
+      changed_when: true
+      when:
+        - inventory_hostname == "api-staging"
+        - not ansible_check_mode
+
   tasks:
     - name: Phase 1 - Packages
       ansible.builtin.import_tasks: tasks/packages.yml

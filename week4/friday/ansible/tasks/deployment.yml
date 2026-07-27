@@ -32,3 +32,63 @@
   notify: Reload systemd
   tags:
     - deployment
+
+# -----------------------------------------------------
+# Nginx configuration
+# -----------------------------------------------------
+- name: Disable default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  when: inventory_hostname == "api-staging"
+  notify: Validate and reload nginx
+  tags:
+    - deployment
+
+- name: Deploy KijaniKiosk Nginx configuration
+  ansible.builtin.template:
+    src: kijanikiosk-nginx.conf.j2
+    dest: /etc/nginx/conf.d/kijanikiosk.conf
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "api-staging"
+  notify: Validate and reload nginx
+  tags:
+    - deployment
+
+- name: Enable and start Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started
+  when:
+    - inventory_hostname == "api-staging"
+    - not ansible_check_mode
+  tags:
+    - deployment
+
+- name: Initialise Nginx active environment as blue
+  ansible.builtin.template:
+    src: kijanikiosk-active-env.conf.j2
+    dest: /etc/nginx/kijanikiosk-active-env.conf
+    owner: root
+    group: root
+    mode: "0644"
+    force: false
+  when: inventory_hostname == "api-staging"
+  notify: Validate and reload nginx
+  tags:
+    - deployment
+
+- name: Initialise active environment state as blue
+  ansible.builtin.copy:
+    content: "blue\n"
+    dest: "{{ base_dir }}/.active-env"
+    owner: root
+    group: "{{ service_group }}"
+    mode: "0640"
+    force: false
+  when: inventory_hostname == "api-staging"
+  tags:
+    - deployment

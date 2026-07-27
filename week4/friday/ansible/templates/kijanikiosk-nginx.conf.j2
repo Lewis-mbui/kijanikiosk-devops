@@ -1,0 +1,19 @@
+upstream kk-api-blue {
+    server 127.0.0.1:3000;
+    keepalive 32;
+}
+
+upstream kk-api-green {
+    server 127.0.0.1:3001;
+    keepalive 32;
+}
+
+server {
+    listen 80;
+    server_name _;
+
+    access_log /var/log/nginx/kijanikiosk.access.log;
+    error_log  /var/log/nginx/kijanikiosk.error.log;
+
+    include /etc/nginx/kijanikiosk-active-env.conf;
+}
