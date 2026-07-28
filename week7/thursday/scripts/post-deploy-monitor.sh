@@ -77,7 +77,7 @@ main() {
     read -r http_code response_time < <(
       curl -sS \
         --max-time 5 \
-        --write-out "%{http_code} %{time_total}" \
+        --write-out "%{http_code} %{time_total}\n" \
         --output /dev/null \
         "${PROXY_HEALTH_URL}" 2>/dev/null ||
         echo "000 0"
