@@ -9,6 +9,22 @@
   tags:
     - deployment
 
+- name: Deploy blue-green switch script
+  ansible.builtin.copy:
+    src: switch-env.sh
+    dest: /opt/kijanikiosk/scripts/switch-env.sh
+    owner: root
+    group: kijanikiosk
+    mode: "0750"
+
+- name: Deploy rollback script
+  ansible.builtin.copy:
+    src: rollback.sh
+    dest: /opt/kijanikiosk/scripts/rollback.sh
+    owner: root
+    group: kijanikiosk
+    mode: "0750"
+
 - name: Deploy blue API systemd unit
   ansible.builtin.template:
     src: kk-api-blue.service.j2
