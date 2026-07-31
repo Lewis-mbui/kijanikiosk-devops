@@ -1,0 +1,44 @@
+KijaniKiosk Payments Production Image Verification
+=================================================
+
+1. IMAGE SIZE
+-------------
+REPOSITORY                TAG            SIZE
+kijanikiosk/kk-payments   v1.0.0-prod    195MB
+kijanikiosk/kk-payments   v1.0.0-local   361MB
+
+Baseline image:   361MB
+Production image: 195MB
+Reduction:        166MB (approximately 46%)
+
+Note: The current node:18-alpine base image is approximately 181MB.
+The production image therefore cannot be smaller than the historical
+threshold used in the course material. The multi-stage build is evaluated
+against the local 361MB single-stage baseline.
+
+2. DEVELOPMENT DEPENDENCIES
+---------------------------
+kijanikiosk-payments@1.0.0 /app
+`-- (empty)
+
+
+Result: TypeScript, Jest, and ESLint are absent.
+
+3. PRODUCTION DEPENDENCIES
+--------------------------
+kijanikiosk-payments@1.0.0 /app
+`-- express@5.2.1
+
+
+4. CONTAINER USER
+-----------------
+kijani
+uid=100(kijani) gid=101(kijani) groups=101(kijani),101(kijani)
+
+5. DOCKER HEALTH STATUS
+-----------------------
+Status: healthy
+
+6. APPLICATION HEALTH ENDPOINT
+------------------------------
+{"status":"ok","service":"kk-payments","version":"v1.0.0-prod","port":3001}
