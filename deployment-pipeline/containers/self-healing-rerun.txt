@@ -40,4 +40,5 @@ Recorded recovery time: 17 seconds
 
 Result:
 
-The Deployment automatically created a new Pod with a different name after one replica was deleted. The surviving replica remained Running, and the Deployment returned to 2/2 available replicas without manual recovery.
+The Deployment automatically created a new Pod with a different name after one replica was deleted. 
+The surviving replica remained Running, and the Deployment returned to 2/2 available replicas without manual recovery.
