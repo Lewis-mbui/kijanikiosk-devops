@@ -1,0 +1,43 @@
+KijaniKiosk Payments — Self-Healing Rerun Evidence
+Date: 2026-08-02
+Environment: Minikube
+Deployment: kk-payments
+Replica target: 2
+
+=== Initial Pod State ===
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-845654b6b8-5m44m   1/1     Running   0          10m
+kk-payments-845654b6b8-bc26t   1/1     Running   0          10m
+
+=== Pod Deletion ===
+Pod selected for deletion: pod/kk-payments-845654b6b8-5m44m
+T0 (Pod deleted): 21:13:54
+
+pod "kk-payments-845654b6b8-5m44m" deleted from default namespace
+
+=== Replacement Observation ===
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-845654b6b8-bc26t   1/1     Running   0          10m
+kk-payments-845654b6b8-kzvf6   1/1     Running   0          2s
+
+T1 (replacement Running): 21:14:11
+
+=== Final Pod State ===
+NAME                           READY   STATUS    RESTARTS   AGE
+kk-payments-845654b6b8-bc26t   1/1     Running   0          10m
+kk-payments-845654b6b8-kzvf6   1/1     Running   0          17s
+
+=== Final Deployment State ===
+NAME          READY   UP-TO-DATE   AVAILABLE   AGE
+kk-payments   2/2     2            2           10m
+
+=== Recovery Summary ===
+Deleted Pod:     kk-payments-845654b6b8-5m44m
+Replacement Pod: kk-payments-845654b6b8-kzvf6
+Recorded T0:     21:13:54
+Recorded T1:     21:14:11
+Recorded recovery time: 17 seconds
+
+Result:
+
+The Deployment automatically created a new Pod with a different name after one replica was deleted. The surviving replica remained Running, and the Deployment returned to 2/2 available replicas without manual recovery.
