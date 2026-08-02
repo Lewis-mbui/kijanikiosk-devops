@@ -25,6 +25,14 @@
     group: kijanikiosk
     mode: "0750"
 
+- name: Deploy post-deployment monitor script
+  ansible.builtin.copy:
+    src: post-deploy-monitor.sh
+    dest: /opt/kijanikiosk/scripts/post-deploy-monitor.sh
+    owner: root
+    group: kijanikiosk
+    mode: "0750"
+
 - name: Deploy blue API systemd unit
   ansible.builtin.template:
     src: kk-api-blue.service.j2
