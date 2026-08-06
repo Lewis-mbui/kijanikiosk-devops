@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: kk-payments
   annotations:
-    kubernetes.io/change-cause: "Phase 2: Update kk-payments to v1.2.0-bad (regression test)"
+    kubernetes.io/change-cause: "Phase 1: Update kk-payments to v1.1.0 for latency fix"
   labels:
     app: kk-payments
     week: "9"
@@ -32,7 +32,7 @@ spec:
 
       containers:
         - name: kk-payments
-          image: lewis0648/kk-payments:1.2.0-bad
+          image: lewis0648/kk-payments:1.1.0-1da0173
 
           ports:
             - containerPort: 3001
@@ -45,7 +45,7 @@ spec:
               value: "3001"
 
             - name: APP_VERSION
-              value: "1.2.0-bad"
+              value: "1.1.0-1da0173"
 
           resources:
             requests:
