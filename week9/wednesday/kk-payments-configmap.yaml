@@ -3,7 +3,7 @@ data:
   APP_PORT: "3000"
   DB_HOST: postgres-prod.kijani.internal
   DB_PORT: "5432"
-  LOG_LEVEL: warn
+  LOG_LEVEL: debug
   MAX_CONNECTIONS: "10"
   NODE_ENV: production
 kind: ConfigMap
