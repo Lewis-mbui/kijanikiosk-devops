@@ -4,7 +4,7 @@ metadata:
   name: kk-payments
   namespace: kijani-project
   annotations:
-    kubernetes.io/change-cause: "Deliberate regression: v9.9.9-bad does not exist"
+    kubernetes.io/change-cause: "Initial production-approaching deployment: v1.1.0"
   labels:
     app: kk-payments
 
@@ -33,7 +33,7 @@ spec:
 
       containers:
         - name: kk-payments
-          image: lewis0648/kk-payments:v9.9.9-bad
+          image: lewis0648/kk-payments:1.1.0-1da0173
 
           ports:
             - containerPort: 3001
