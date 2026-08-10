@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: kk-payments
   annotations:
-    kubernetes.io/change-cause: "Extract all config to ConfigMap and Secret"
+    kubernetes.io/change-cause: "Add readiness/liveness probes and resource limits"
   labels:
     app: kk-payments
     week: "9"
@@ -47,11 +47,26 @@ spec:
             - secretRef:
                 name: kk-payments-secrets
 
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+
           resources:
             requests:
-              memory: "64Mi"
               cpu: "100m"
-
+              memory: "128Mi"
             limits:
-              memory: "256Mi"
               cpu: "500m"
+              memory: "256Mi"
