@@ -35,9 +35,16 @@ const processReceiptUpload = async (event) => {
       record.s3.object.key.replace(/\+/g, ' ')
     );
 
-    const orderId = objectKey
+    let orderId = objectKey
       .replace(/^receipt-/, '')
       .replace(/\.json$/, '');
+
+    let warning;
+
+    if (!orderId || orderId === objectKey) {
+      orderId = 'UNKNOWN';
+      warning = 'malformed key: could not extract orderId';
+    }
 
     const logEntry = {
       service: 'kk-receipts',
@@ -48,7 +55,8 @@ const processReceiptUpload = async (event) => {
       fileSizeBytes: record.s3.object.size,
       uploadedAt: record.eventTime,
       processedAt: new Date().toISOString(),
-      currency: process.env.DEFAULT_CURRENCY
+      currency: process.env.DEFAULT_CURRENCY,
+      ...(warning && { warning })
     };
 
     console.log(JSON.stringify(logEntry));
