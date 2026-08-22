@@ -1,0 +1,19 @@
+KijaniKiosk Payments Builder Stage Test Run
+===========================================
+
+Image: kijanikiosk/kk-payments:v1.0.0-builder
+
+
+> kijanikiosk-payments@1.0.0 test
+> jest --ci --reporters=default --reporters=jest-junit
+
+PASS tests/payments.test.ts
+  ✓ calculates payment total (2 ms)
+  ✓ creates a pending payment
+  ✓ rejects invalid payment amount (5 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        2.202 s
+Ran all test suites.
