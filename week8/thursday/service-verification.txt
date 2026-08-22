@@ -1,0 +1,14 @@
+=== Service ===
+NAME                  TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+kk-payments-service   NodePort   10.104.213.25   <none>        3001:30001/TCP   4m4s
+
+=== EndpointSlices ===
+NAME                        ADDRESSTYPE   PORTS   ENDPOINTS               AGE
+kk-payments-service-qsgqt   IPv4          3001    10.244.0.9,10.244.0.8   4m4s
+
+=== NodePort health check ===
+{"status":"ok","service":"kk-payments","version":"1.0.0-dec816a","port":3001}
+
+=== In-cluster DNS health check ===
+{"status":"ok","service":"kk-payments","version":"1.0.0-dec816a","port":3001}pod "curl-test" deleted from default namespace
+

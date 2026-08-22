@@ -1,0 +1,103 @@
+=== 1. Overview ===
+NAME                              READY   STATUS    RESTARTS   AGE
+pod/kk-payments-89594cdd6-q4gr6   1/1     Running   0          20m
+pod/kk-payments-89594cdd6-svvkv   1/1     Running   0          20m
+
+NAME                          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/kk-payments-service   NodePort   10.104.213.25   <none>        3001:30001/TCP   16m
+
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/kk-payments   2/2     2            2           20m
+
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/kk-payments-89594cdd6   2         2         2       20m
+
+=== 2. Deployment Description ===
+Name:                   kk-payments
+Namespace:              default
+CreationTimestamp:      Sun, 02 Aug 2026 11:57:26 +0300
+Labels:                 app=kk-payments
+                        week=8
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=kk-payments
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=kk-payments
+           version=1.0.0
+  Containers:
+   kk-payments:
+    Image:      lewis0648/kk-payments:1.0.0-dec816a
+    Port:       3001/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     500m
+      memory:  256Mi
+    Requests:
+      cpu:     100m
+      memory:  64Mi
+    Environment:
+      NODE_ENV:     production
+      PORT:         3001
+      APP_VERSION:  1.0.0-dec816a
+    Mounts:         <none>
+  Volumes:          <none>
+  Node-Selectors:   <none>
+  Tolerations:      <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   kk-payments-89594cdd6 (2/2 replicas created)
+Events:
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  20m   deployment-controller  Scaled up replica set kk-payments-89594cdd6 from 0 to 2
+
+=== 3. Pod Logs ===
+=== Logs: pod/kk-payments-89594cdd6-q4gr6 ===
+kk-payments 1.0.0-dec816a listening on port 3001
+
+=== Logs: pod/kk-payments-89594cdd6-svvkv ===
+kk-payments 1.0.0-dec816a listening on port 3001
+
+=== 4. Pod Execution Checks ===
+--- whoami ---
+kijani
+
+--- node --version ---
+v18.20.8
+
+--- localhost health check ---
+{"status":"ok","service":"kk-payments","version":"1.0.0-dec816a","port":3001}
+
+=== 5. Resource Usage ===
+NAME                          CPU(cores)   MEMORY(bytes)   
+kk-payments-89594cdd6-q4gr6   1m           16Mi            
+kk-payments-89594cdd6-svvkv   1m           16Mi            
+
+=== 6. Recent Cluster Events ===
+LAST SEEN   TYPE     REASON              OBJECT                             MESSAGE
+37m         Normal   Killing             pod/kk-payments-private            Stopping container kk-payments
+36m         Normal   Killing             pod/kk-payments-7cc4b6bb95-5lz9k   Stopping container kk-payments
+36m         Normal   Killing             pod/kk-payments-7cc4b6bb95-wqrtq   Stopping container kk-payments
+20m         Normal   Pulled              pod/kk-payments-89594cdd6-svvkv    Container image "lewis0648/kk-payments:1.0.0-dec816a" already present on machine and can be accessed by the pod
+20m         Normal   Started             pod/kk-payments-89594cdd6-q4gr6    Container started
+20m         Normal   ScalingReplicaSet   deployment/kk-payments             Scaled up replica set kk-payments-89594cdd6 from 0 to 2
+20m         Normal   SuccessfulCreate    replicaset/kk-payments-89594cdd6   Created pod: kk-payments-89594cdd6-svvkv
+20m         Normal   Scheduled           pod/kk-payments-89594cdd6-q4gr6    Successfully assigned default/kk-payments-89594cdd6-q4gr6 to minikube
+20m         Normal   Pulled              pod/kk-payments-89594cdd6-q4gr6    Container image "lewis0648/kk-payments:1.0.0-dec816a" already present on machine and can be accessed by the pod
+20m         Normal   Created             pod/kk-payments-89594cdd6-q4gr6    Container created
+20m         Normal   SuccessfulCreate    replicaset/kk-payments-89594cdd6   Created pod: kk-payments-89594cdd6-q4gr6
+20m         Normal   Scheduled           pod/kk-payments-89594cdd6-svvkv    Successfully assigned default/kk-payments-89594cdd6-svvkv to minikube
+20m         Normal   Started             pod/kk-payments-89594cdd6-svvkv    Container started
+20m         Normal   Created             pod/kk-payments-89594cdd6-svvkv    Container created
+10m         Normal   Scheduled           pod/curl-test                      Successfully assigned default/curl-test to minikube
+10m         Normal   Pulling             pod/curl-test                      Pulling image "curlimages/curl"
+10m         Normal   Started             pod/curl-test                      Container started
+10m         Normal   Pulled              pod/curl-test                      Successfully pulled image "curlimages/curl" in 11.044s (11.044s including waiting). Image size: 23799160 bytes.
+10m         Normal   Created             pod/curl-test                      Container created
