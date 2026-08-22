@@ -1,0 +1,177 @@
+Started by user Lewis Mbui
+
+Obtained Jenkinsfile from git https://github.com/Lewis-mbui/kijanikiosk-payments.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/Lewis-mbui/kijanikiosk-payments.git
+ > git init /var/jenkins_home/workspace/kijanikiosk-payments # timeout=10
+Fetching upstream changes from https://github.com/Lewis-mbui/kijanikiosk-payments.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/Lewis-mbui/kijanikiosk-payments.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/Lewis-mbui/kijanikiosk-payments.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision aa6f2c88a327bbf4bb5f9d47d30fbea71e206e4a (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f aa6f2c88a327bbf4bb5f9d47d30fbea71e206e4a # timeout=10
+Commit message: "update package.json"
+ > git rev-list --no-walk df73c14dbead00cbbd1071b9a635571611fccef5 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ node -p require('./package.json').version
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] sh
++ node -p require('./package.json').version
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] echo
+Installing dependencies for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 362 packages, and audited 363 packages in 2s
+
+70 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[Pipeline] echo
+Building application...
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@1.0.0 build
+> rm -rf dist && mkdir -p dist && cp -r src/* dist/
+
+[Pipeline] echo
+Verifying build output...
+[Pipeline] sh
++ set -e
++ test -d dist
++ find dist -type f
++ wc -l
++ FILE_COUNT=1
++ echo Build output: 1 files in dist/
+Build output: 1 files in dist/
++ test 1 -gt 0
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] echo
+Running test suite for kijanikiosk-payments...
+[Pipeline] sh
++ set -e
++ npm test
+
+> kijanikiosk-payments@1.0.0 test
+> jest --ci --reporters=default --reporters=jest-junit
+
+PASS tests/payments.test.js
+  ✓ calculates payment total (2 ms)
+  ✓ creates a pending payment
+  ✓ rejects invalid payment amount (4 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       3 passed, 3 total
+Snapshots:   0 total
+Time:        0.129 s, estimated 1 s
+Ran all test suites.
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] echo
+Archiving build artifact for kijanikiosk-payments build 14...
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] echo
+Jenkins artifact URL: http://localhost:8080/job/kijanikiosk-payments/14/artifact/
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+[Pipeline] echo
+Publishing kijanikiosk-payments version 1.0.0-aa6f2c8 to Nexus...
+[Pipeline] withCredentials
+Masking supported pattern matches of $NEXUS_USER or $NEXUS_PASS
+[Pipeline] {
+[Pipeline] sh
++ set -e
++ trap rm -f .npmrc EXIT
++ set +x
+v1.0.0-aa6f2c8
+npm notice
+npm notice 📦  kijanikiosk-payments@1.0.0-aa6f2c8
+npm notice Tarball Contents
+npm notice 435B dist/payments.js
+npm notice 596B package.json
+npm notice Tarball Details
+npm notice name: kijanikiosk-payments
+npm notice version: 1.0.0-aa6f2c8
+npm notice filename: kijanikiosk-payments-1.0.0-aa6f2c8.tgz
+npm notice package size: 678 B
+npm notice unpacked size: 1.0 kB
+npm notice shasum: 3fc88ef3aa671012e2cebc322104d159565f85bb
+npm notice integrity: sha512-ZZSoTdimMK1FF[...]N/UN6IsCrWUcQ==
+npm notice total files: 2
+npm notice
+npm notice Publishing to http://nexus:8081/repository/npm-kijanikiosk/ with tag latest and default access
++ kijanikiosk-payments@1.0.0-aa6f2c8
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+SUCCESS: Published kijanikiosk-payments version 1.0.0-aa6f2c8 to Nexus.
+[Pipeline] echo
+Nexus artifact URL: http://nexus:8081/repository/npm-kijanikiosk/kijanikiosk-payments/-/kijanikiosk-payments-1.0.0-aa6f2c8.tgz
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
