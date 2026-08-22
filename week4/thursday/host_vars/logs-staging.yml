@@ -1,0 +1,7 @@
+service_name: kk-logs
+service_port: 5000
+
+env_file: logging.env
+env_template: logging.env.j2
+service_template: kk-logs.service.j2
+working_directory: logs

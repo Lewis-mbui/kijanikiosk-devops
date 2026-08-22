@@ -1,0 +1,24 @@
+{{ base_dir }}/shared/logs/*.log {
+
+    daily
+
+    rotate 14
+
+    compress
+
+    delaycompress
+
+    missingok
+
+    notifempty
+
+    sharedscripts
+
+    su kk-logs {{ service_group }}
+
+    create 0640 kk-logs {{ service_group }}
+
+    postrotate
+        systemctl try-restart kk-logs.service >/dev/null 2>&1 || true
+    endscript
+}

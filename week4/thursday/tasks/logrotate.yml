@@ -1,0 +1,17 @@
+---
+- name: Deploy logrotate configuration
+  ansible.builtin.template:
+    src: logrotate.j2
+    dest: /etc/logrotate.d/kijanikiosk
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Create verification log
+  ansible.builtin.copy:
+    content: ""
+    dest: "{{ log_dir }}/verification.log"
+    owner: kk-logs
+    group: "{{ service_group }}"
+    mode: "0640"
+    force: false
