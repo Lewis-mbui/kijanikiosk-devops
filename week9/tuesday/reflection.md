@@ -1,0 +1,17 @@
+# Week 9 Tuesday Reflection
+
+## Question 1
+
+During the Phase 2 rollout, the Service continued routing traffic because it selects Pods using the label `app: kk-payments`, not by image version. Both the existing v1.1.0 Pods and the new Pods created during the rollout had this label, but only Ready Pods are included as Service endpoints. In my `kubectl get pods -l app=kk-payments -w` output, the original Pods (`kk-payments-787d7f4c8-frvp8`, `kk-payments-787d7f4c8-p6svz`, and initially `kk-payments-787d7f4c8-vn2db`) were Running while the new Pods (`kk-payments-78d4797ddd-8ph5v` and `kk-payments-78d4797ddd-7j4hq`) progressed from `Pending` to `ContainerCreating`, then failed with `ErrImagePull` and `ImagePullBackOff`. Because the replacement Pods never reached the Ready state, Kubernetes did not complete the rollout and the Service continued sending requests only to the healthy v1.1.0 Pods. This demonstrated that the Deployment's rolling update strategy protected service availability even though the rollout itself had stalled.
+
+## Question 2
+
+`kubectl rollout undo` rolls back to the immediately previous Deployment revision, while `kubectl rollout undo --to-revision=N` restores a specific revision chosen by its revision number. In this lab I used `kubectl rollout undo deployment/kk-payments --to-revision=2` because revision 2 corresponded to the successful v1.1.0 deployment, as confirmed by `kubectl rollout history deployment/kk-payments`. Targeting a specific revision becomes critical when there are several newer revisions and only one of the older ones is known to be stable. For example, after three consecutive failed deployments, the default `undo` command would only return to the most recent previous revision, which could itself still be faulty. Specifying `--to-revision=N` ensures that Kubernetes restores the exact version that has already been verified to work.
+
+## Question 3
+
+After the rollback, `kubectl rollout history deployment/kk-payments` showed a new revision instead of deleting the failed one. My history changed from revisions 1, 2 and 3 to revisions 1, 3 and 4, where revision 4 represented the restored v1.1.0 Deployment while revision 3 remained as the failed v1.2.0-bad rollout. Kubernetes creates a new revision because a rollback is itself a Deployment change that should be recorded permanently. Rather than rewriting history, Kubernetes maintains an append-only audit trail showing every rollout, including failed deployments and recovery actions. This provides a complete record of what happened, making it possible to investigate incidents and understand exactly when each Deployment state was active.
+
+## Question 4
+
+After rolling back the cluster, I updated the Deployment manifest so that it matched the running state and committed the change. If I had not done this, the manifest in Git would still have referenced the broken `lewis0648/kk-payments:1.2.0-bad` image. If a teammate had run `kubectl apply -f k8s/kk-payments-deployment.yaml` from the `main` branch 20 minutes later, Kubernetes would have treated the manifest as the desired state and started another rolling update to the non-existent image. The new Pods would again have entered `ErrImagePull` and `ImagePullBackOff`, recreating the same stalled rollout I observed during Phase 2. Keeping the manifest synchronized with the live cluster ensures that Git remains the single source of truth and prevents previously rolled-back failures from being unintentionally reintroduced.

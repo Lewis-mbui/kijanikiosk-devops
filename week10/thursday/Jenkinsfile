@@ -1,0 +1,45 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Build') {
+      steps {
+        echo 'Build complete'
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'Tests complete'
+      }
+    }
+
+    stage('Approve Production Deployment') {
+      steps {
+        input(
+          message: "Deploy to production?",
+          ok: 'Deploy',
+          submitter: 'YOUR_JENKINS_USERNAME',
+          parameters: [
+            text(
+              name: 'APPROVAL_REASON',
+              description: 'Reason for approval'
+            )
+          ]
+        )
+      }
+    }
+
+    stage('Deploy to Production') {
+      steps {
+        echo 'Deploying to production'
+      }
+    }
+  }
+
+  post {
+    always {
+      echo "Pipeline complete. Build: ${BUILD_NUMBER}"
+    }
+  }
+}

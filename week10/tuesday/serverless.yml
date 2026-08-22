@@ -1,0 +1,43 @@
+service: kijani-receipts
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: dev
+  region: af-south-1
+  environment:
+    NODE_ENV: development
+    DEFAULT_CURRENCY: KES
+
+functions:
+  generateReceipt:
+    handler: handler.generateReceipt
+    events:
+      - httpApi:
+          path: /receipts
+          method: POST
+
+  processReceiptUpload:
+    handler: handler.processReceiptUpload
+    events:
+      - s3:
+          bucket: kk-payments-receipts
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: receipt-
+            - suffix: .json
+          existing: false
+
+plugins:
+  - serverless-offline
+  - serverless-s3-local
+
+custom:
+  s3:
+    host: localhost
+    port: 4569
+    directory: /tmp/kijani-s3-local
+
+  serverless-offline:
+    httpPort: 3000
+    lambdaPort: 3002

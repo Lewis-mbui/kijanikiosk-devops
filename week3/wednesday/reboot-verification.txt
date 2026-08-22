@@ -1,0 +1,27 @@
+===== SERVICE =====
+○ kk-api.service - KijaniKiosk API Service
+     Loaded: loaded (/etc/systemd/system/kk-api.service; enabled; vendor preset: enabled)
+     Active: inactive (dead) since Mon 2026-06-22 13:36:55 EAT; 2h 28min ago
+       Docs: https://github.com/kijanikiosk/api/blob/main/README.md
+    Process: 849 ExecStart=/usr/bin/node /opt/kijanikiosk/api/server.js (code=exited, status=0/SUCCESS)
+   Main PID: 849 (code=exited, status=0/SUCCESS)
+        CPU: 77ms
+
+Warning: some journal files were not opened due to insufficient permissions.
+
+===== HOLDS =====
+nginx
+nodejs
+
+===== FIREWALL =====
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                  
+80/tcp                     ALLOW IN    Anywhere                  
+22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+80/tcp (v6)                ALLOW IN    Anywhere (v6)  

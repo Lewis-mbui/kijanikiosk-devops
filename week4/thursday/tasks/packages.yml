@@ -1,0 +1,76 @@
+---
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install prerequisite packages
+  ansible.builtin.apt:
+    name:
+      - curl
+      - gnupg
+      - acl
+      - ufw
+      - logrotate
+    state: present
+    install_recommends: false
+
+- name: Create APT keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Download NodeSource GPG key
+  ansible.builtin.get_url:
+    url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+    dest: /tmp/nodesource.key
+    mode: "0644"
+    force: false
+
+- name: Convert NodeSource key
+  ansible.builtin.command:
+    cmd: >
+      gpg --dearmor
+      -o /etc/apt/keyrings/nodesource.gpg
+      /tmp/nodesource.key
+    creates: /etc/apt/keyrings/nodesource.gpg
+
+- name: Set permissions on NodeSource key
+  ansible.builtin.file:
+    path: /etc/apt/keyrings/nodesource.gpg
+    owner: root
+    group: root
+    mode: "0644"
+  when: not ansible_check_mode
+
+- name: Configure NodeSource repository
+  ansible.builtin.template:
+    src: nodesource.list.j2
+    dest: /etc/apt/sources.list.d/nodesource.list
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Refresh apt cache after adding repository
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install application packages
+  ansible.builtin.apt:
+    name:
+      - "nginx={{ nginx_version }}"
+      - "nodejs={{ node_version }}"
+    state: present
+    install_recommends: false
+  when: not ansible_check_mode
+
+- name: Hold application packages
+  ansible.builtin.dpkg_selections:
+    name: "{{ item }}"
+    selection: hold
+  loop: "{{ application_packages }}"
+  when: not ansible_check_mode

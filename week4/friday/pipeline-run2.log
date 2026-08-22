@@ -1,0 +1,340 @@
+=== Terraform init ===
+[0m[1mInitializing modules...[0m
+[0m[1mInitializing provider plugins found in the configuration...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+- Using previously-installed hashicorp/aws v6.53.0
+
+[0m[1mInitializing the backend...[0m
+
+[0m[1mInitializing provider plugins found in the state...[0m
+- Reusing previous version of hashicorp/aws
+- Using previously-installed hashicorp/aws v6.53.0
+
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[0m[32m
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.[0m
+=== Terraform plan verification ===
+[0m[1mdata.aws_subnets.available: Reading...[0m[0m
+[0m[1mdata.aws_ami.ubuntu: Reading...[0m[0m
+[0m[1mmodule.app_servers["logs"].aws_security_group.app: Refreshing state... [id=sg-053f9e8116e9747bc][0m
+[0m[1mmodule.app_servers["payments"].aws_security_group.app: Refreshing state... [id=sg-073d41351c40a8d01][0m
+[0m[1mmodule.app_servers["api"].aws_security_group.app: Refreshing state... [id=sg-0e7e84089925f3afc][0m
+[0m[1mdata.aws_subnets.available: Read complete after 0s [id=af-south-1][0m
+[0m[1mdata.aws_ami.ubuntu: Read complete after 0s [id=ami-0524190ef5414e601][0m
+[0m[1mmodule.app_servers["payments"].aws_instance.this: Refreshing state... [id=i-0d1d1865063786b21][0m
+[0m[1mmodule.app_servers["logs"].aws_instance.this: Refreshing state... [id=i-054871ccef768b969][0m
+[0m[1mmodule.app_servers["api"].aws_instance.this: Refreshing state... [id=i-00d9a7a757745cbe4][0m
+
+[0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
+
+[0mTerraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+Releasing state lock. This may take a few moments...
+=== Extracting Terraform outputs ===
+=== Writing Ansible inventory ===
+[kijanikiosk]
+api-staging ansible_host=13.247.223.48
+payments-staging ansible_host=15.240.138.2
+logs-staging ansible_host=13.245.157.221
+
+[kijanikiosk:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/lewis/.ssh/kijanikiosk-key-aws.pem
+ansible_ssh_common_args=-o StrictHostKeyChecking=accept-new
+=== Testing Ansible connectivity ===
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+api-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.12"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+logs-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.12"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+payments-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.12"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+=== Running Ansible playbook ===
+
+PLAY [Configure KijaniKiosk servers] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Update apt cache] ********************************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Install prerequisite packages] *******************************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Create APT keyrings directory] *******************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Download NodeSource GPG key] *********************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Convert NodeSource key] **************************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Set permissions on NodeSource key] ***************************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Configure NodeSource repository] *****************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Refresh apt cache after adding repository] *******************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Install application packages] ********************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Hold nginx package] ******************************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Hold nodejs package] *****************************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Ensure KijaniKiosk system group exists] **********************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Ensure service accounts exist] *******************************************
+ok: [payments-staging] => (item=kk-api)
+ok: [logs-staging] => (item=kk-api)
+ok: [api-staging] => (item=kk-api)
+ok: [logs-staging] => (item=kk-payments)
+ok: [payments-staging] => (item=kk-payments)
+ok: [api-staging] => (item=kk-payments)
+ok: [logs-staging] => (item=kk-logs)
+ok: [payments-staging] => (item=kk-logs)
+ok: [api-staging] => (item=kk-logs)
+
+TASK [Ensure service accounts belong to KijaniKiosk group] *********************
+ok: [api-staging] => (item=kk-api)
+ok: [payments-staging] => (item=kk-api)
+ok: [logs-staging] => (item=kk-api)
+ok: [api-staging] => (item=kk-payments)
+ok: [payments-staging] => (item=kk-payments)
+ok: [logs-staging] => (item=kk-payments)
+ok: [api-staging] => (item=kk-logs)
+ok: [payments-staging] => (item=kk-logs)
+ok: [logs-staging] => (item=kk-logs)
+
+TASK [Gather passwd database entries] ******************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Ensure amina belongs to the KijaniKiosk group] ***************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+TASK [Ensure KijaniKiosk base directory exists] ********************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Create KijaniKiosk directory structure] **********************************
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+
+TASK [Configure shared log ACLs] ***********************************************
+ok: [logs-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+ok: [payments-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+ok: [api-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+ok: [logs-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+ok: [payments-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+ok: [api-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+ok: [logs-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+ok: [payments-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+ok: [api-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+ok: [logs-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+ok: [api-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+ok: [payments-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+ok: [logs-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+ok: [api-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+ok: [payments-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+ok: [logs-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+ok: [api-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+ok: [payments-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+
+TASK [Remove redundant health user ACL] ****************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Remove redundant default health user ACL] ********************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Remove redundant normal health group ACL] ********************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Configure health directory ACLs] *****************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Deploy environment file] *************************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Deploy systemd unit] *****************************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Reset failed service state] **********************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Enable and start service] ************************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Set default incoming policy] *********************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Set default outgoing policy] *********************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Allow SSH] ***************************************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Allow HTTP] **************************************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Allow monitoring subnet to payments] *************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Deny external access to payments] ****************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Enable UFW] **************************************************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Create persistent journal directory] *************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Create journald configuration directory] *********************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Deploy journald configuration] *******************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Create journal files] ****************************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Deploy logrotate configuration] ******************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Create verification log] *************************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=40   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+logs-staging               : ok=40   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+payments-staging           : ok=40   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+

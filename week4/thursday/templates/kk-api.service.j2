@@ -1,0 +1,36 @@
+[Unit]
+Description=KijaniKiosk API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+
+User=kk-api
+Group=kk-api
+
+WorkingDirectory={{ base_dir }}/{{ working_directory }}
+EnvironmentFile={{ base_dir }}/config/{{ env_file }}
+
+ExecStart=/usr/bin/bash -c 'sleep infinity'
+
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths={{ base_dir }}/config
+ReadWritePaths={{ log_dir }}
+CapabilityBoundingSet=
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+UMask=0027
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

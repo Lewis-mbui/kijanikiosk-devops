@@ -1,0 +1,21 @@
+service: kijani-receipts
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  stage: dev
+  region: af-south-1
+  environment:
+    NODE_ENV: development
+    DEFAULT_CURRENCY: KES
+
+functions:
+  generateReceipt:
+    handler: handler.generateReceipt
+    events:
+      - httpApi:
+          path: /receipts
+          method: POST
+
+plugins:
+  - serverless-offline

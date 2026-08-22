@@ -1,0 +1,99 @@
+=== Version computation ===
+VERSION=1.0.0
+GITSHA=215deec
+IMAGE_TAG=1.0.0-215deec
+
+=== Tagged image ===
+IMAGE                                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+lewis0648/kk-payments:1.0.0-215deec   c1046afaf034        195MB         47.1MB        
+The push refers to repository [docker.io/lewis0648/kk-payments]
+44136fa355b3: Waiting
+dd71dde834b5: Waiting
+f18232174bc9: Waiting
+1797c2d2c2d1: Waiting
+44136fa355b3: Waiting
+dd71dde834b5: Waiting
+f18232174bc9: Waiting
+dd71dde834b5: Layer already exists
+f18232174bc9: Waiting
+1e5a4c89cee5: Waiting
+f18232174bc9: Waiting
+1e5a4c89cee5: Waiting
+1797c2d2c2d1: Waiting
+25ff2da83641: Waiting
+f18232174bc9: Layer already exists
+1e5a4c89cee5: Waiting
+1797c2d2c2d1: Waiting
+25ff2da83641: Waiting
+b1418318a71a: Waiting
+1e5a4c89cee5: Layer already exists
+b1418318a71a: Waiting
+1797c2d2c2d1: Waiting
+470f0ff9f545: Waiting
+1797c2d2c2d1: Waiting
+44136fa355b3: Pushed
+1797c2d2c2d1: Waiting
+25ff2da83641: Waiting
+b1418318a71a: Waiting
+470f0ff9f545: Waiting
+25ff2da83641: Waiting
+b1418318a71a: Waiting
+424fb3fd6a97: Waiting
+25ff2da83641: Layer already exists
+b1418318a71a: Waiting
+b1418318a71a: Waiting
+424fb3fd6a97: Waiting
+b1418318a71a: Waiting
+424fb3fd6a97: Waiting
+424fb3fd6a97: Waiting
+2b0cc8aa4a00: Waiting
+b1418318a71a: Layer already exists
+424fb3fd6a97: Waiting
+2b0cc8aa4a00: Waiting
+424fb3fd6a97: Waiting
+2b0cc8aa4a00: Waiting
+424fb3fd6a97: Waiting
+2b0cc8aa4a00: Waiting
+1797c2d2c2d1: Pushed
+27dcb2db5eb2: Waiting
+470f0ff9f545: Pushed
+a9c59eec6c29: Waiting
+2b0cc8aa4a00: Waiting
+a9c59eec6c29: Waiting
+a9c59eec6c29: Waiting
+2b0cc8aa4a00: Waiting
+27dcb2db5eb2: Pushed
+424fb3fd6a97: Pushed
+a9c59eec6c29: Pushed
+2b0cc8aa4a00: Pushed
+1.0.0-215deec: digest: sha256:c1046afaf03485dbfe0dde4bb3ce7bafb4fa132e9dd42ab64642778d96dcfab6 size: 856
+
+=== Delete-then-pull verification ===
+1.0.0-215deec: Pulling from lewis0648/kk-payments
+424fb3fd6a97: Pulling fs layer
+a9c59eec6c29: Pulling fs layer
+2b0cc8aa4a00: Pulling fs layer
+b1418318a71a: Pulling fs layer
+27dcb2db5eb2: Pulling fs layer
+470f0ff9f545: Pulling fs layer
+424fb3fd6a97: Already exists
+a9c59eec6c29: Already exists
+2b0cc8aa4a00: Already exists
+b1418318a71a: Already exists
+27dcb2db5eb2: Already exists
+470f0ff9f545: Already exists
+44136fa355b3: Download complete
+424fb3fd6a97: Pull complete
+b1418318a71a: Pull complete
+470f0ff9f545: Pull complete
+2b0cc8aa4a00: Pull complete
+27dcb2db5eb2: Pull complete
+a9c59eec6c29: Pull complete
+1797c2d2c2d1: Download complete
+Digest: sha256:c1046afaf03485dbfe0dde4bb3ce7bafb4fa132e9dd42ab64642778d96dcfab6
+Status: Downloaded newer image for lewis0648/kk-payments:1.0.0-215deec
+docker.io/lewis0648/kk-payments:1.0.0-215deec
+
+=== Freshly pulled image ===
+IMAGE                                 ID             DISK USAGE   CONTENT SIZE   EXTRA
+lewis0648/kk-payments:1.0.0-215deec   c1046afaf034        195MB         47.1MB        

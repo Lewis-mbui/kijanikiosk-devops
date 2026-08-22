@@ -1,0 +1,13 @@
+=== Service ===
+NAME                  TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+kk-payments-service   NodePort   10.105.187.162   <none>        3001:30001/TCP   16s
+
+=== Endpoints ===
+NAME                  ENDPOINTS                           AGE
+kk-payments-service   10.244.0.14:3001,10.244.0.15:3001   16s
+
+=== NodePort health check ===
+{"status":"ok","service":"kk-payments","version":"1.0.0-215deec","port":3001}
+
+=== In-cluster DNS health check ===
+{"status":"ok","service":"kk-payments","version":"1.0.0-215deec","port":3001}

@@ -1,0 +1,34 @@
+---
+- name: Ensure KijaniKiosk system group exists
+  ansible.builtin.group:
+    name: "{{ service_group }}"
+    system: true
+    state: present
+
+- name: Ensure service accounts exist
+  ansible.builtin.user:
+    name: "{{ item }}"
+    system: true
+    create_home: false
+    home: /nonexistent
+    shell: /usr/sbin/nologin
+    state: present
+  loop: "{{ service_accounts }}"
+
+- name: Ensure service accounts belong to KijaniKiosk group
+  ansible.builtin.user:
+    name: "{{ item }}"
+    groups: "{{ service_group }}"
+    append: true
+  loop: "{{ service_accounts }}"
+
+- name: Gather passwd database entries
+  ansible.builtin.getent:
+    database: passwd
+
+- name: Ensure amina belongs to the KijaniKiosk group
+  ansible.builtin.user:
+    name: amina
+    groups: "{{ service_group }}"
+    append: true
+  when: "'amina' in ansible_facts.getent_passwd"

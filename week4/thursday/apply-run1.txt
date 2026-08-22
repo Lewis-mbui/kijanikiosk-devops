@@ -1,0 +1,263 @@
+
+PLAY [Configure KijaniKiosk servers] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Update apt cache] ********************************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Install prerequisite packages] *******************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Create APT keyrings directory] *******************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Download NodeSource GPG key] *********************************************
+changed: [api-staging]
+changed: [logs-staging]
+changed: [payments-staging]
+
+TASK [Convert NodeSource key] **************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Set permissions on NodeSource key] ***************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Configure NodeSource repository] *****************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+TASK [Refresh apt cache after adding repository] *******************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Install application packages] ********************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Hold nginx package] ******************************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Hold nodejs package] *****************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Ensure KijaniKiosk system group exists] **********************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Ensure service accounts exist] *******************************************
+changed: [payments-staging] => (item=kk-api)
+changed: [api-staging] => (item=kk-api)
+changed: [logs-staging] => (item=kk-api)
+changed: [payments-staging] => (item=kk-payments)
+changed: [api-staging] => (item=kk-payments)
+changed: [logs-staging] => (item=kk-payments)
+changed: [api-staging] => (item=kk-logs)
+changed: [payments-staging] => (item=kk-logs)
+changed: [logs-staging] => (item=kk-logs)
+
+TASK [Ensure service accounts belong to KijaniKiosk group] *********************
+changed: [api-staging] => (item=kk-api)
+changed: [payments-staging] => (item=kk-api)
+changed: [logs-staging] => (item=kk-api)
+changed: [api-staging] => (item=kk-payments)
+changed: [payments-staging] => (item=kk-payments)
+changed: [logs-staging] => (item=kk-payments)
+changed: [api-staging] => (item=kk-logs)
+changed: [payments-staging] => (item=kk-logs)
+changed: [logs-staging] => (item=kk-logs)
+
+TASK [Gather passwd database entries] ******************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Ensure amina belongs to the KijaniKiosk group] ***************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+TASK [Create KijaniKiosk directory structure] **********************************
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+
+TASK [Configure shared log ACLs] ***********************************************
+changed: [logs-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+changed: [payments-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+changed: [api-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+changed: [payments-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+changed: [logs-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+changed: [api-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+changed: [payments-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+changed: [logs-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+changed: [api-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+changed: [payments-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [api-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [payments-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [api-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [payments-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [api-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [logs-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+
+TASK [Configure health directory ACLs] *****************************************
+changed: [payments-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx'})
+changed: [api-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx'})
+changed: [logs-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx'})
+changed: [payments-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x'})
+changed: [logs-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x'})
+changed: [api-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x'})
+changed: [payments-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [api-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [payments-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x', 'default': True})
+changed: [api-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x', 'default': True})
+
+TASK [Deploy environment file] *************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Deploy systemd unit] *****************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Enable and start service] ************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Set default incoming policy] *********************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Set default outgoing policy] *********************************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Allow SSH] ***************************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Allow HTTP] **************************************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Allow monitoring subnet to payments] *************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Deny external access to payments] ****************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Enable UFW] **************************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Create persistent journal directory] *************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Create journald configuration directory] *********************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Deploy journald configuration] *******************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Create journal files] ****************************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Deploy logrotate configuration] ******************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Create verification log] *************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+RUNNING HANDLER [Reload systemd] ***********************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+RUNNING HANDLER [Restart service] **********************************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+RUNNING HANDLER [Restart journald] *********************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=37   changed=28   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+logs-staging               : ok=37   changed=28   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+payments-staging           : ok=37   changed=28   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+

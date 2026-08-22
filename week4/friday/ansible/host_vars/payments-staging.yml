@@ -1,0 +1,7 @@
+service_name: kk-payments
+service_port: 3001
+
+env_file: payments-api.env
+env_template: payments.env.j2
+service_template: kk-payments.service.j2
+working_directory: payments
