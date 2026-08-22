@@ -1,0 +1,118 @@
+---
+- name: Deploy application deployment script
+  ansible.builtin.copy:
+    src: deploy-app.sh
+    dest: "{{ base_dir }}/scripts/deploy-app.sh"
+    owner: root
+    group: "{{ service_group }}"
+    mode: "0750"
+  tags:
+    - deployment
+
+- name: Deploy blue-green switch script
+  ansible.builtin.copy:
+    src: switch-env.sh
+    dest: /opt/kijanikiosk/scripts/switch-env.sh
+    owner: root
+    group: kijanikiosk
+    mode: "0750"
+
+- name: Deploy rollback script
+  ansible.builtin.copy:
+    src: rollback.sh
+    dest: /opt/kijanikiosk/scripts/rollback.sh
+    owner: root
+    group: kijanikiosk
+    mode: "0750"
+
+- name: Deploy post-deployment monitor script
+  ansible.builtin.copy:
+    src: post-deploy-monitor.sh
+    dest: /opt/kijanikiosk/scripts/post-deploy-monitor.sh
+    owner: root
+    group: kijanikiosk
+    mode: "0750"
+
+- name: Deploy blue API systemd unit
+  ansible.builtin.template:
+    src: kk-api-blue.service.j2
+    dest: /etc/systemd/system/kk-api-blue.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "api-staging"
+  notify: Reload systemd
+  tags:
+    - deployment
+
+- name: Deploy green API systemd unit
+  ansible.builtin.template:
+    src: kk-api-green.service.j2
+    dest: /etc/systemd/system/kk-api-green.service
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "api-staging"
+  notify: Reload systemd
+  tags:
+    - deployment
+
+# -----------------------------------------------------
+# Nginx configuration
+# -----------------------------------------------------
+- name: Disable default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  when: inventory_hostname == "api-staging"
+  notify: Validate and reload nginx
+  tags:
+    - deployment
+
+- name: Deploy KijaniKiosk Nginx configuration
+  ansible.builtin.template:
+    src: kijanikiosk-nginx.conf.j2
+    dest: /etc/nginx/conf.d/kijanikiosk.conf
+    owner: root
+    group: root
+    mode: "0644"
+  when: inventory_hostname == "api-staging"
+  notify: Validate and reload nginx
+  tags:
+    - deployment
+
+- name: Enable and start Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started
+  when:
+    - inventory_hostname == "api-staging"
+    - not ansible_check_mode
+  tags:
+    - deployment
+
+- name: Initialise Nginx active environment as blue
+  ansible.builtin.template:
+    src: kijanikiosk-active-env.conf.j2
+    dest: /etc/nginx/kijanikiosk-active-env.conf
+    owner: root
+    group: root
+    mode: "0644"
+    force: false
+  when: inventory_hostname == "api-staging"
+  notify: Validate and reload nginx
+  tags:
+    - deployment
+
+- name: Initialise active environment state as blue
+  ansible.builtin.copy:
+    content: "blue\n"
+    dest: "{{ base_dir }}/.active-env"
+    owner: root
+    group: "{{ service_group }}"
+    mode: "0640"
+    force: false
+  when: inventory_hostname == "api-staging"
+  tags:
+    - deployment

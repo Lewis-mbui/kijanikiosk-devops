@@ -1,0 +1,873 @@
+=== Terraform init ===
+[0m[1mInitializing modules...[0m
+- app_servers in modules/app_server
+[0m[1mInitializing provider plugins found in the configuration...[0m
+- Finding hashicorp/aws versions matching "~> 6.0"...
+- Installing hashicorp/aws v6.53.0...
+- Installed hashicorp/aws v6.53.0 (signed by HashiCorp)
+
+[0m[1mInitializing the backend...[0m
+[0m[32m
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.[0m
+
+[0m[1mInitializing provider plugins found in the state...[0m
+
+Terraform has created a lock file [1m.terraform.lock.hcl[0m to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.[0m
+
+[0m[1m[32mTerraform has been successfully initialized![0m[32m[0m
+[0m[32m
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.[0m
+=== Terraform apply ===
+[0m[1mdata.aws_subnets.available: Reading...[0m[0m
+[0m[1mdata.aws_ami.ubuntu: Reading...[0m[0m
+[0m[1mdata.aws_subnets.available: Read complete after 0s [id=af-south-1][0m
+[0m[1mdata.aws_ami.ubuntu: Read complete after 1s [id=ami-0524190ef5414e601][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create[0m
+
+Terraform will perform the following actions:
+
+[1m  # module.app_servers["api"].aws_instance.this[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "this" {
+      [32m+[0m[0m ami                                  = "ami-0524190ef5414e601"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = (known after apply)
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m force_destroy                        = false
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = (known after apply)
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "t3.micro"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = "kijanikiosk-key-aws"
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_group_id                   = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = (known after apply)
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m region                               = "af-south-1"
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = "subnet-0a3ca63bc6564cdeb"
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-api-staging"
+          [32m+[0m[0m "Service"     = "api"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-api-staging"
+          [32m+[0m[0m "Service"     = "api"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options (known after apply)
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m primary_network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = (known after apply)
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 8
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+
+      [32m+[0m[0m secondary_network_interface (known after apply)
+    }
+
+[1m  # module.app_servers["api"].aws_security_group.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "app" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Security group for api server"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "Allow all outbound traffic"
+              [32m+[0m[0m from_port        = 0
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "-1"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 0
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "HTTP"
+              [32m+[0m[0m from_port        = 80
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 80
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "129.222.147.0/24",
+                ]
+              [32m+[0m[0m description      = "SSH"
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+            },
+        ]
+      [32m+[0m[0m name                   = "kijanikiosk-api-staging-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m region                 = "af-south-1"
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags                   = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-api-staging-sg"
+          [32m+[0m[0m "Service"     = "api"
+        }
+      [32m+[0m[0m tags_all               = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-api-staging-sg"
+          [32m+[0m[0m "Service"     = "api"
+        }
+      [32m+[0m[0m vpc_id                 = "vpc-098fc9161773f9db2"
+    }
+
+[1m  # module.app_servers["logs"].aws_instance.this[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "this" {
+      [32m+[0m[0m ami                                  = "ami-0524190ef5414e601"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = (known after apply)
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m force_destroy                        = false
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = (known after apply)
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "t3.micro"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = "kijanikiosk-key-aws"
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_group_id                   = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = (known after apply)
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m region                               = "af-south-1"
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = "subnet-0a3ca63bc6564cdeb"
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-logs-staging"
+          [32m+[0m[0m "Service"     = "logs"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-logs-staging"
+          [32m+[0m[0m "Service"     = "logs"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options (known after apply)
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m primary_network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = (known after apply)
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 8
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+
+      [32m+[0m[0m secondary_network_interface (known after apply)
+    }
+
+[1m  # module.app_servers["logs"].aws_security_group.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "app" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Security group for logs server"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "Allow all outbound traffic"
+              [32m+[0m[0m from_port        = 0
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "-1"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 0
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "HTTP"
+              [32m+[0m[0m from_port        = 80
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 80
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "129.222.147.0/24",
+                ]
+              [32m+[0m[0m description      = "SSH"
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+            },
+        ]
+      [32m+[0m[0m name                   = "kijanikiosk-logs-staging-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m region                 = "af-south-1"
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags                   = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-logs-staging-sg"
+          [32m+[0m[0m "Service"     = "logs"
+        }
+      [32m+[0m[0m tags_all               = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-logs-staging-sg"
+          [32m+[0m[0m "Service"     = "logs"
+        }
+      [32m+[0m[0m vpc_id                 = "vpc-098fc9161773f9db2"
+    }
+
+[1m  # module.app_servers["payments"].aws_instance.this[0m will be created
+[0m  [32m+[0m[0m resource "aws_instance" "this" {
+      [32m+[0m[0m ami                                  = "ami-0524190ef5414e601"
+      [32m+[0m[0m arn                                  = (known after apply)
+      [32m+[0m[0m associate_public_ip_address          = (known after apply)
+      [32m+[0m[0m availability_zone                    = (known after apply)
+      [32m+[0m[0m disable_api_stop                     = (known after apply)
+      [32m+[0m[0m disable_api_termination              = (known after apply)
+      [32m+[0m[0m ebs_optimized                        = (known after apply)
+      [32m+[0m[0m enable_primary_ipv6                  = (known after apply)
+      [32m+[0m[0m force_destroy                        = false
+      [32m+[0m[0m get_password_data                    = false
+      [32m+[0m[0m host_id                              = (known after apply)
+      [32m+[0m[0m host_resource_group_arn              = (known after apply)
+      [32m+[0m[0m iam_instance_profile                 = (known after apply)
+      [32m+[0m[0m id                                   = (known after apply)
+      [32m+[0m[0m instance_initiated_shutdown_behavior = (known after apply)
+      [32m+[0m[0m instance_lifecycle                   = (known after apply)
+      [32m+[0m[0m instance_state                       = (known after apply)
+      [32m+[0m[0m instance_type                        = "t3.micro"
+      [32m+[0m[0m ipv6_address_count                   = (known after apply)
+      [32m+[0m[0m ipv6_addresses                       = (known after apply)
+      [32m+[0m[0m key_name                             = "kijanikiosk-key-aws"
+      [32m+[0m[0m monitoring                           = (known after apply)
+      [32m+[0m[0m outpost_arn                          = (known after apply)
+      [32m+[0m[0m password_data                        = (known after apply)
+      [32m+[0m[0m placement_group                      = (known after apply)
+      [32m+[0m[0m placement_group_id                   = (known after apply)
+      [32m+[0m[0m placement_partition_number           = (known after apply)
+      [32m+[0m[0m primary_network_interface_id         = (known after apply)
+      [32m+[0m[0m private_dns                          = (known after apply)
+      [32m+[0m[0m private_ip                           = (known after apply)
+      [32m+[0m[0m public_dns                           = (known after apply)
+      [32m+[0m[0m public_ip                            = (known after apply)
+      [32m+[0m[0m region                               = "af-south-1"
+      [32m+[0m[0m secondary_private_ips                = (known after apply)
+      [32m+[0m[0m security_groups                      = (known after apply)
+      [32m+[0m[0m source_dest_check                    = true
+      [32m+[0m[0m spot_instance_request_id             = (known after apply)
+      [32m+[0m[0m subnet_id                            = "subnet-0a3ca63bc6564cdeb"
+      [32m+[0m[0m tags                                 = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-payments-staging"
+          [32m+[0m[0m "Service"     = "payments"
+        }
+      [32m+[0m[0m tags_all                             = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-payments-staging"
+          [32m+[0m[0m "Service"     = "payments"
+        }
+      [32m+[0m[0m tenancy                              = (known after apply)
+      [32m+[0m[0m user_data_base64                     = (known after apply)
+      [32m+[0m[0m user_data_replace_on_change          = false
+      [32m+[0m[0m vpc_security_group_ids               = (known after apply)
+
+      [32m+[0m[0m capacity_reservation_specification (known after apply)
+
+      [32m+[0m[0m cpu_options (known after apply)
+
+      [32m+[0m[0m ebs_block_device (known after apply)
+
+      [32m+[0m[0m enclave_options (known after apply)
+
+      [32m+[0m[0m ephemeral_block_device (known after apply)
+
+      [32m+[0m[0m instance_market_options (known after apply)
+
+      [32m+[0m[0m maintenance_options (known after apply)
+
+      [32m+[0m[0m metadata_options (known after apply)
+
+      [32m+[0m[0m network_interface (known after apply)
+
+      [32m+[0m[0m primary_network_interface (known after apply)
+
+      [32m+[0m[0m private_dns_name_options (known after apply)
+
+      [32m+[0m[0m root_block_device {
+          [32m+[0m[0m delete_on_termination = true
+          [32m+[0m[0m device_name           = (known after apply)
+          [32m+[0m[0m encrypted             = (known after apply)
+          [32m+[0m[0m iops                  = (known after apply)
+          [32m+[0m[0m kms_key_id            = (known after apply)
+          [32m+[0m[0m tags_all              = (known after apply)
+          [32m+[0m[0m throughput            = (known after apply)
+          [32m+[0m[0m volume_id             = (known after apply)
+          [32m+[0m[0m volume_size           = 8
+          [32m+[0m[0m volume_type           = "gp3"
+        }
+
+      [32m+[0m[0m secondary_network_interface (known after apply)
+    }
+
+[1m  # module.app_servers["payments"].aws_security_group.app[0m will be created
+[0m  [32m+[0m[0m resource "aws_security_group" "app" {
+      [32m+[0m[0m arn                    = (known after apply)
+      [32m+[0m[0m description            = "Security group for payments server"
+      [32m+[0m[0m egress                 = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "Allow all outbound traffic"
+              [32m+[0m[0m from_port        = 0
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "-1"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 0
+            },
+        ]
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m ingress                = [
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "0.0.0.0/0",
+                ]
+              [32m+[0m[0m description      = "HTTP"
+              [32m+[0m[0m from_port        = 80
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 80
+            },
+          [32m+[0m[0m {
+              [32m+[0m[0m cidr_blocks      = [
+                  [32m+[0m[0m "129.222.147.0/24",
+                ]
+              [32m+[0m[0m description      = "SSH"
+              [32m+[0m[0m from_port        = 22
+              [32m+[0m[0m ipv6_cidr_blocks = []
+              [32m+[0m[0m prefix_list_ids  = []
+              [32m+[0m[0m protocol         = "tcp"
+              [32m+[0m[0m security_groups  = []
+              [32m+[0m[0m self             = false
+              [32m+[0m[0m to_port          = 22
+            },
+        ]
+      [32m+[0m[0m name                   = "kijanikiosk-payments-staging-sg"
+      [32m+[0m[0m name_prefix            = (known after apply)
+      [32m+[0m[0m owner_id               = (known after apply)
+      [32m+[0m[0m region                 = "af-south-1"
+      [32m+[0m[0m revoke_rules_on_delete = false
+      [32m+[0m[0m tags                   = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-payments-staging-sg"
+          [32m+[0m[0m "Service"     = "payments"
+        }
+      [32m+[0m[0m tags_all               = {
+          [32m+[0m[0m "Environment" = "staging"
+          [32m+[0m[0m "ManagedBy"   = "Terraform"
+          [32m+[0m[0m "Name"        = "kijanikiosk-payments-staging-sg"
+          [32m+[0m[0m "Service"     = "payments"
+        }
+      [32m+[0m[0m vpc_id                 = "vpc-098fc9161773f9db2"
+    }
+
+[1mPlan:[0m [0m6 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  [32m+[0m[0m public_ips   = {
+      [32m+[0m[0m api      = (known after apply)
+      [32m+[0m[0m logs     = (known after apply)
+      [32m+[0m[0m payments = (known after apply)
+    }
+  [32m+[0m[0m ssh_commands = {
+      [32m+[0m[0m api      = (known after apply)
+      [32m+[0m[0m logs     = (known after apply)
+      [32m+[0m[0m payments = (known after apply)
+    }
+[0m[1mmodule.app_servers["logs"].aws_security_group.app: Creating...[0m[0m
+[0m[1mmodule.app_servers["api"].aws_security_group.app: Creating...[0m[0m
+[0m[1mmodule.app_servers["payments"].aws_security_group.app: Creating...[0m[0m
+[0m[1mmodule.app_servers["api"].aws_security_group.app: Creation complete after 3s [id=sg-0e7e84089925f3afc][0m
+[0m[1mmodule.app_servers["payments"].aws_security_group.app: Creation complete after 3s [id=sg-073d41351c40a8d01][0m
+[0m[1mmodule.app_servers["logs"].aws_security_group.app: Creation complete after 3s [id=sg-053f9e8116e9747bc][0m
+[0m[1mmodule.app_servers["api"].aws_instance.this: Creating...[0m[0m
+[0m[1mmodule.app_servers["logs"].aws_instance.this: Creating...[0m[0m
+[0m[1mmodule.app_servers["payments"].aws_instance.this: Creating...[0m[0m
+[0m[1mmodule.app_servers["payments"].aws_instance.this: Still creating... [00m10s elapsed][0m[0m
+[0m[1mmodule.app_servers["api"].aws_instance.this: Still creating... [00m10s elapsed][0m[0m
+[0m[1mmodule.app_servers["logs"].aws_instance.this: Still creating... [00m10s elapsed][0m[0m
+[0m[1mmodule.app_servers["payments"].aws_instance.this: Creation complete after 15s [id=i-0d1d1865063786b21][0m
+[0m[1mmodule.app_servers["api"].aws_instance.this: Creation complete after 16s [id=i-00d9a7a757745cbe4][0m
+[0m[1mmodule.app_servers["logs"].aws_instance.this: Creation complete after 16s [id=i-054871ccef768b969][0m
+[0m[1m[32m
+Apply complete! Resources: 6 added, 0 changed, 0 destroyed.[0m
+[0m[1m[32m
+Outputs:
+
+[0mpublic_ips = {
+  "api" = "13.247.223.48"
+  "logs" = "13.245.157.221"
+  "payments" = "15.240.138.2"
+}
+ssh_commands = {
+  "api" = "ssh -i ~/.ssh/kijanikiosk-key-aws.pem ubuntu@13.247.223.48"
+  "logs" = "ssh -i ~/.ssh/kijanikiosk-key-aws.pem ubuntu@13.245.157.221"
+  "payments" = "ssh -i ~/.ssh/kijanikiosk-key-aws.pem ubuntu@15.240.138.2"
+}
+=== Extracting Terraform outputs ===
+=== Writing Ansible inventory ===
+[kijanikiosk]
+api-staging ansible_host=13.247.223.48
+payments-staging ansible_host=15.240.138.2
+logs-staging ansible_host=13.245.157.221
+
+[kijanikiosk:vars]
+ansible_user=ubuntu
+ansible_ssh_private_key_file=/home/lewis/.ssh/kijanikiosk-key-aws.pem
+ansible_ssh_common_args=-o StrictHostKeyChecking=accept-new
+=== Testing Ansible connectivity ===
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+api-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.12"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+logs-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.12"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+payments-staging | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.12"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+=== Running Ansible playbook ===
+
+PLAY [Configure KijaniKiosk servers] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.21/reference_appendices/interpreter_discovery.html for more information.
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Update apt cache] ********************************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+TASK [Install prerequisite packages] *******************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Create APT keyrings directory] *******************************************
+ok: [api-staging]
+ok: [logs-staging]
+ok: [payments-staging]
+
+TASK [Download NodeSource GPG key] *********************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Convert NodeSource key] **************************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Set permissions on NodeSource key] ***************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Configure NodeSource repository] *****************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Refresh apt cache after adding repository] *******************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Install application packages] ********************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Hold nginx package] ******************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Hold nodejs package] *****************************************************
+changed: [api-staging]
+changed: [logs-staging]
+changed: [payments-staging]
+
+TASK [Ensure KijaniKiosk system group exists] **********************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Ensure service accounts exist] *******************************************
+changed: [payments-staging] => (item=kk-api)
+changed: [api-staging] => (item=kk-api)
+changed: [logs-staging] => (item=kk-api)
+changed: [payments-staging] => (item=kk-payments)
+changed: [api-staging] => (item=kk-payments)
+changed: [logs-staging] => (item=kk-payments)
+changed: [payments-staging] => (item=kk-logs)
+changed: [api-staging] => (item=kk-logs)
+changed: [logs-staging] => (item=kk-logs)
+
+TASK [Ensure service accounts belong to KijaniKiosk group] *********************
+changed: [api-staging] => (item=kk-api)
+changed: [payments-staging] => (item=kk-api)
+changed: [logs-staging] => (item=kk-api)
+changed: [api-staging] => (item=kk-payments)
+changed: [payments-staging] => (item=kk-payments)
+changed: [logs-staging] => (item=kk-payments)
+changed: [api-staging] => (item=kk-logs)
+changed: [payments-staging] => (item=kk-logs)
+changed: [logs-staging] => (item=kk-logs)
+
+TASK [Gather passwd database entries] ******************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Ensure amina belongs to the KijaniKiosk group] ***************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+TASK [Create KijaniKiosk directory structure] **********************************
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/api', 'owner': 'kk-api', 'group': 'kk-api', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/payments', 'owner': 'kk-payments', 'group': 'kk-payments', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/logs', 'owner': 'kk-logs', 'group': 'kk-logs', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared', 'owner': 'root', 'group': 'root', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+
+TASK [Configure shared log ACLs] ***********************************************
+changed: [logs-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+changed: [payments-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+changed: [api-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx'})
+changed: [logs-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+changed: [payments-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+changed: [api-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x'})
+changed: [logs-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+changed: [payments-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+changed: [api-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x'})
+changed: [payments-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [api-staging] => (item={'entity': 'kk-api', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [api-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [payments-staging] => (item={'entity': 'kk-payments', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [logs-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [api-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+changed: [payments-staging] => (item={'entity': 'ubuntu', 'etype': 'user', 'permissions': 'r-x', 'default': True})
+
+TASK [Configure health directory ACLs] *****************************************
+changed: [payments-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx'})
+changed: [logs-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx'})
+changed: [api-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx'})
+changed: [payments-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x'})
+changed: [api-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x'})
+changed: [logs-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x'})
+changed: [logs-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [api-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [payments-staging] => (item={'entity': 'kk-logs', 'etype': 'user', 'permissions': 'rwx', 'default': True})
+changed: [payments-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x', 'default': True})
+changed: [logs-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x', 'default': True})
+changed: [api-staging] => (item={'entity': 'kijanikiosk', 'etype': 'group', 'permissions': 'r-x', 'default': True})
+
+TASK [Deploy environment file] *************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Deploy systemd unit] *****************************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+TASK [Enable and start service] ************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Set default incoming policy] *********************************************
+ok: [logs-staging]
+ok: [api-staging]
+ok: [payments-staging]
+
+TASK [Set default outgoing policy] *********************************************
+ok: [payments-staging]
+ok: [api-staging]
+ok: [logs-staging]
+
+TASK [Allow SSH] ***************************************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Allow HTTP] **************************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Allow monitoring subnet to payments] *************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Deny external access to payments] ****************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Enable UFW] **************************************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Create persistent journal directory] *************************************
+ok: [logs-staging]
+ok: [payments-staging]
+ok: [api-staging]
+
+TASK [Create journald configuration directory] *********************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Deploy journald configuration] *******************************************
+changed: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Create journal files] ****************************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Deploy logrotate configuration] ******************************************
+changed: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Create verification log] *************************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+RUNNING HANDLER [Reload systemd] ***********************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+RUNNING HANDLER [Restart service] **********************************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+RUNNING HANDLER [Restart journald] *********************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=37   changed=28   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+logs-staging               : ok=37   changed=28   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+payments-staging           : ok=37   changed=28   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
