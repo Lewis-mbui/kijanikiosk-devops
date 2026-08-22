@@ -1,0 +1,129 @@
+[2026-06-22T13:30:40] INFO  === Phase 1: Packages ===
+[2026-06-22T13:30:40] INFO  Updating package index
+[2026-06-22T13:30:44] OK    Package index updated
+[2026-06-22T13:30:44] INFO  Installing prerequisite tools
+Reading package lists...
+Building dependency tree...
+Reading state information...
+acl is already the newest version (2.3.1-1).
+curl is already the newest version (7.81.0-1ubuntu1.24).
+gnupg is already the newest version (2.2.27-3ubuntu2.5).
+ufw is already the newest version (0.36.1-4ubuntu0.1).
+The following packages were automatically installed and are no longer required:
+  libfwupd2 libfwupdplugin5 libgcab-1.0-0 libllvm13 libsmbios-c2
+Use 'sudo apt autoremove' to remove them.
+0 to upgrade, 0 to newly install, 0 to remove and 3 not to upgrade.
+[2026-06-22T13:30:44] OK    Prerequisites installed
+[2026-06-22T13:30:44] INFO  Installing NodeSource signing key
+[2026-06-22T13:30:46] OK    NodeSource key installed
+[2026-06-22T13:30:46] INFO  Configuring NodeSource repository
+[2026-06-22T13:30:49] OK    Repository configured
+[2026-06-22T13:30:49] INFO  Installing nginx and nodejs
+Reading package lists...
+Building dependency tree...
+Reading state information...
+nginx is already the newest version (1.18.0-6ubuntu14.15).
+nodejs is already the newest version (22.23.0-1nodesource1).
+The following packages were automatically installed and are no longer required:
+  libfwupd2 libfwupdplugin5 libgcab-1.0-0 libllvm13 libsmbios-c2
+Use 'sudo apt autoremove' to remove them.
+0 to upgrade, 0 to newly install, 0 to remove and 3 not to upgrade.
+[2026-06-22T13:30:50] INFO  Holding package versions
+nginx was already set on hold.
+nodejs was already set on hold.
+[2026-06-22T13:30:50] INFO  installed versions
+[2026-06-22T13:30:50] OK    nginx: nginx version: nginx/1.18.0 (Ubuntu)
+[2026-06-22T13:30:50] OK    node: v22.23.0
+[2026-06-22T13:30:50] INFO  === Phase 2: Service Accounts ===
+[2026-06-22T13:30:50] INFO  Ensuring application group exists
+[2026-06-22T13:30:50] OK    Group ready
+[2026-06-22T13:30:50] INFO  Processing kk-api
+[2026-06-22T13:30:50] INFO  kk-api already exists
+[2026-06-22T13:30:50] OK    kk-api added to kijanikiosk
+[2026-06-22T13:30:50] INFO  Processing kk-payments
+[2026-06-22T13:30:50] INFO  kk-payments already exists
+[2026-06-22T13:30:50] OK    kk-payments added to kijanikiosk
+[2026-06-22T13:30:50] INFO  Processing kk-logs
+[2026-06-22T13:30:50] INFO  kk-logs already exists
+[2026-06-22T13:30:50] OK    kk-logs added to kijanikiosk
+[2026-06-22T13:30:50] OK    amina added to kijanikiosk
+[2026-06-22T13:30:50] OK    Service accounts complete
+[2026-06-22T13:30:50] INFO  === Phase 3: Directories ===
+[2026-06-22T13:30:50] INFO  Creting directory structure
+[2026-06-22T13:30:50] OK    Directoryies created
+[2026-06-22T13:30:50] INFO  Applying ownership
+[2026-06-22T13:30:50] INFO  Applying permissions
+[2026-06-22T13:30:50] OK    Permissions applied
+[2026-06-22T13:30:50] INFO  Applying ACLs
+[2026-06-22T13:30:50] OK    ACLs configured
+[2026-06-22T13:30:50] INFO  === Phase 4: systemd Units ===
+[2026-06-22T13:30:50] INFO  Creating environment files
+[2026-06-22T13:30:50] OK    Environment files ready
+[2026-06-22T13:30:50] INFO  Writing kk-api.service
+[2026-06-22T13:30:50] OK    Unit file written
+[2026-06-22T13:30:50] INFO  Reloading systemd
+[2026-06-22T13:30:50] OK    systemd reloaded
+[2026-06-22T13:30:50] INFO  Enabling service
+[2026-06-22T13:30:50] OK    kk-api enabled (not started)
+[2026-06-22T13:30:50] INFO  === Phase 5: Firewall ===
+[2026-06-22T13:30:50] INFO  Resetting firewall
+Backing up 'user.rules' to '/etc/ufw/user.rules.20260622_133051'
+Backing up 'before.rules' to '/etc/ufw/before.rules.20260622_133051'
+Backing up 'after.rules' to '/etc/ufw/after.rules.20260622_133051'
+Backing up 'user6.rules' to '/etc/ufw/user6.rules.20260622_133051'
+Backing up 'before6.rules' to '/etc/ufw/before6.rules.20260622_133051'
+Backing up 'after6.rules' to '/etc/ufw/after6.rules.20260622_133051'
+
+[2026-06-22T13:30:51] OK    Firewall reset
+[2026-06-22T13:30:51] INFO  Applying default policies
+Default incoming policy changed to 'deny'
+(be sure to update your rules accordingly)
+Default outgoing policy changed to 'allow'
+(be sure to update your rules accordingly)
+[2026-06-22T13:30:51] OK    Default policies applied
+[2026-06-22T13:30:51] INFO  Allowing SSH
+Rules updated
+Rules updated (v6)
+[2026-06-22T13:30:51] OK    SSH allowed
+[2026-06-22T13:30:51] INFO  Allowing HTTP
+Rules updated
+Rules updated (v6)
+[2026-06-22T15:57:11] OK    HTTP allowed
+[2026-06-22T15:57:11] INFO  Enabling firewall
+Firewall is active and enabled on system startup
+[2026-06-22T13:30:52] OK    Firewall enabled
+[2026-06-22T13:30:52] INFO  Verifying rules
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                  
+80/tcp                     ALLOW IN    Anywhere                  
+22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+
+[2026-06-22T13:30:52] OK    Firewall configured
+[2026-06-22T13:30:52] INFO  === Phase 6: Post-Provision Verification ===
+[2026-06-22T13:30:52] INFO  Verifying service accounts
+[2026-06-22T13:30:52] OK    Account exists: kk-api
+[2026-06-22T13:30:52] OK    Account exists: kk-payments
+[2026-06-22T13:30:52] OK    Account exists: kk-logs
+[2026-06-22T13:30:52] INFO  Verifying directories
+[2026-06-22T13:30:52] OK    Directory exists: api
+[2026-06-22T13:30:52] OK    Directory exists: payments
+[2026-06-22T13:30:52] OK    Directory exists: logs
+[2026-06-22T13:30:52] OK    Directory exists: config
+[2026-06-22T13:30:52] OK    Directory exists: scripts
+[2026-06-22T13:30:52] OK    Directory exists: shared/logs
+[2026-06-22T13:30:52] INFO  Checking SUID files
+[2026-06-22T13:30:52] OK    No SUID files present
+[2026-06-22T13:30:52] INFO  Checking package holds
+[2026-06-22T13:30:52] OK    nginx held
+[2026-06-22T13:30:52] OK    nodejs held
+[2026-06-22T13:30:52] INFO  Checking service enablement
+[2026-06-22T13:30:52] OK    kk-api enabled
+[2026-06-22T13:30:52] OK    Verification passed
+[2026-06-22T13:30:52] OK    Provisioning complete. Server is in known state.
