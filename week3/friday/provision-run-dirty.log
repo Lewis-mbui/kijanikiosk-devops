@@ -1,0 +1,335 @@
+[2026-06-24T12:44:20] INFO  === Phase 1: Package Baseline & Drift Detection ===
+[2026-06-24T12:44:20] INFO  Refreshing package metadata
+[2026-06-24T12:44:36] OK    Package index refreshed
+[2026-06-24T12:44:36] INFO  Installing prerequisites
+Reading package lists...
+Building dependency tree...
+Reading state information...
+acl is already the newest version (2.3.1-1).
+curl is already the newest version (7.81.0-1ubuntu1.24).
+gnupg is already the newest version (2.2.27-3ubuntu2.5).
+logrotate is already the newest version (3.19.0-1ubuntu1.1).
+ufw is already the newest version (0.36.1-4ubuntu0.1).
+The following packages were automatically installed and are no longer required:
+  libfwupd2 libfwupdplugin5 libgcab-1.0-0 libllvm13 libsmbios-c2
+Use 'sudo apt autoremove' to remove them.
+0 to upgrade, 0 to newly install, 0 to remove and 16 not to upgrade.
+[2026-06-24T12:44:37] OK    Prerequisites ready
+[2026-06-24T12:44:37] INFO  Preparing NodeSource repository
+[2026-06-24T12:44:37] OK    NodeSource key already present
+[2026-06-24T12:44:40] OK    Repository configured
+[2026-06-24T12:44:40] INFO  Validating package versions
+[2026-06-24T12:44:40] OK    nginx already installed (1.18.0-6ubuntu14.15)
+[2026-06-24T12:44:40] OK    nodejs already installed (22.23.0-1nodesource1)
+[2026-06-24T12:44:40] INFO  Ensuring package holds
+[2026-06-24T12:44:40] OK    nginx already held
+[2026-06-24T12:44:40] OK    nodejs already held
+[2026-06-24T12:44:40] OK    Phase 1 complete
+[2026-06-24T12:44:40] INFO  === Phase 2: Identity & Access Foundation ===
+[2026-06-24T12:44:40] INFO  Ensuring application group exists
+[2026-06-24T12:44:40] OK    Group already exists: kijanikiosk
+[2026-06-24T12:44:40] INFO  Reconciling account: kk-api
+[2026-06-24T12:44:40] OK    Already exists: kk-api
+[2026-06-24T12:44:40] OK    kk-api already in kijanikiosk
+[2026-06-24T12:44:40] INFO  Reconciling account: kk-payments
+[2026-06-24T12:44:40] OK    Already exists: kk-payments
+[2026-06-24T12:44:40] OK    kk-payments already in kijanikiosk
+[2026-06-24T12:44:40] INFO  Reconciling account: kk-logs
+[2026-06-24T12:44:40] OK    Already exists: kk-logs
+[2026-06-24T12:44:40] OK    kk-logs already in kijanikiosk
+[2026-06-24T12:44:40] OK    amina already in kijanikiosk
+[2026-06-24T12:44:40] OK    Phase 2 complete
+[2026-06-24T12:44:40] INFO  === Phase 3: Directory Model & ACL Convergence ===
+[2026-06-24T12:44:40] INFO  Ensuring directory structure
+[2026-06-24T12:44:40] OK    Directory structure ready
+[2026-06-24T12:44:40] INFO  Applying ownership model
+[2026-06-24T12:44:40] OK    Ownership applied
+[2026-06-24T12:44:40] INFO  Applying permissions
+[2026-06-24T12:44:40] OK    Permissions applied
+[2026-06-24T12:44:40] INFO  Reconciling ACLs for shared logs
+[2026-06-24T12:44:40] OK    Shared log ACLs converged
+[2026-06-24T12:44:40] INFO  Applying health directory ACL
+[2026-06-24T12:44:40] OK    Health ACL configured
+[2026-06-24T12:44:40] INFO  Verifying ACL inheritance
+getfacl: Removing leading '/' from absolute path names
+[2026-06-24T12:44:40] OK    Default ACL inheritance verified
+[2026-06-24T12:44:40] OK    Phase 3 complete
+[2026-06-24T12:44:40] INFO  === Phase 4: systemd Services ===
+[2026-06-24T12:44:40] INFO  Creating environment files
+[2026-06-24T12:44:40] OK    Environment files created
+[2026-06-24T12:44:40] INFO  Verifying EnvironmentFile readability
+[2026-06-24T12:44:40] OK    Environment files readable
+[2026-06-24T12:44:40] INFO  Writing kk-api.service
+[2026-06-24T12:44:40] OK    kk-api.service written
+[2026-06-24T12:44:40] INFO  Writing kk-payments.service
+[2026-06-24T12:44:40] OK    kk-payments.service written
+[2026-06-24T12:44:40] INFO  Writing kk-logs.service
+[2026-06-24T12:44:40] OK    kk-logs.service written
+[2026-06-24T12:44:40] INFO  Reloading systemd
+[2026-06-24T12:44:41] OK    systemd reloaded
+[2026-06-24T12:44:41] INFO  Enabling units
+Created symlink /etc/systemd/system/multi-user.target.wants/kk-payments.service → /etc/systemd/system/kk-payments.service.
+Created symlink /etc/systemd/system/multi-user.target.wants/kk-logs.service → /etc/systemd/system/kk-logs.service.
+[2026-06-24T12:44:41] OK    Units enabled
+[2026-06-24T12:44:41] INFO  Validating units
+[2026-06-24T12:44:41] OK    Phase 4 complete
+[2026-06-24T12:44:41] INFO  === Phase 5: Firewall Intent Model ===
+[2026-06-24T12:44:41] INFO  Resetting firewall state
+Backing up 'user.rules' to '/etc/ufw/user.rules.20260624_124442'
+Backing up 'before.rules' to '/etc/ufw/before.rules.20260624_124442'
+Backing up 'after.rules' to '/etc/ufw/after.rules.20260624_124442'
+Backing up 'user6.rules' to '/etc/ufw/user6.rules.20260624_124442'
+Backing up 'before6.rules' to '/etc/ufw/before6.rules.20260624_124442'
+Backing up 'after6.rules' to '/etc/ufw/after6.rules.20260624_124442'
+
+[2026-06-24T12:44:42] OK    Firewall reset
+[2026-06-24T12:44:42] INFO  Applying default policy
+Default incoming policy changed to 'deny'
+(be sure to update your rules accordingly)
+Default outgoing policy changed to 'allow'
+(be sure to update your rules accordingly)
+[2026-06-24T12:44:43] OK    Defaults applied
+[2026-06-24T12:44:43] INFO  Allowing SSH
+Rules updated
+Rules updated (v6)
+[2026-06-24T12:44:43] OK    SSH rule applied
+[2026-06-24T12:44:43] INFO  Allowing HTTP
+Rules updated
+Rules updated (v6)
+[2026-06-24T12:44:43] OK    HTTP rule applied
+[2026-06-24T12:44:43] INFO  Allow monitoring subnet access
+Rules updated
+[2026-06-24T12:44:43] OK    Monitoring access rule applied
+[2026-06-24T12:44:43] INFO  Denying external access to payments
+Rules updated
+Rules updated (v6)
+[2026-06-24T12:44:43] OK    External deny applied
+[2026-06-24T12:44:43] INFO  Enabling firewall
+Firewall is active and enabled on system startup
+[2026-06-24T12:44:44] OK    Firewall enabled
+[2026-06-24T12:44:44] INFO  Verifying rules
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                   # Remote administration
+80/tcp                     ALLOW IN    Anywhere                   # Public web traffic
+3001                       ALLOW IN    10.0.1.0/24                # Payments health monitoring
+3001/tcp                   DENY IN     Anywhere                   # Payments internal only
+22/tcp (v6)                ALLOW IN    Anywhere (v6)              # Remote administration
+80/tcp (v6)                ALLOW IN    Anywhere (v6)              # Public web traffic
+3001/tcp (v6)              DENY IN     Anywhere (v6)              # Payments internal only
+
+[2026-06-24T12:44:44] OK    Phase 5 complete
+[2026-06-24T12:44:44] INFO  === Phase 6: Journal Persistence & Log Rotation ===
+[2026-06-24T12:44:44] INFO  Configuring persistent journal
+[2026-06-24T12:44:44] OK    Persistent journal configured
+[2026-06-24T12:44:44] INFO  Writing logrotate policy
+[2026-06-24T12:44:44] OK    Logrotate configuration written
+[2026-06-24T12:44:44] INFO  Validating logrotate
+WARNING: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.
+
+reading config file /etc/logrotate.d/kijanikiosk
+Reading state from file: /var/lib/logrotate/status
+Allocating hash table for state file, size 64 entries
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+
+Handling 1 logs
+
+rotating pattern: /opt/kijanikiosk/shared/logs/*.log  after 1 days (14 rotations)
+empty log files are not rotated, old logs are removed
+switching euid from 0 to 995 and egid from 0 to 1001 (pid 12750)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-10.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log is empty)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-14.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log is empty)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-17.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log is empty)
+not running postrotate script, since no logs were rotated
+switching euid from 995 to 0 and egid from 1001 to 0 (pid 12750)
+[2026-06-24T12:44:44] OK    logrotate debug passed
+[2026-06-24T12:44:44] INFO  Creating verification log
+[2026-06-24T12:44:44] OK    Verification log created
+[2026-06-24T12:44:44] INFO  Forcing rotation
+[2026-06-24T12:44:44] OK    Rotation executed
+[2026-06-24T12:44:44] INFO  Verifying ACL survival
+[2026-06-24T12:44:44] OK    PASS kk-api can write after rotation
+[2026-06-24T12:44:44] INFO  Checking journal size
+[2026-06-24T12:44:44] OK    Archived and active journals take up 512.0M in the file system.
+[2026-06-24T12:44:44] OK    Phase 6 complete
+[2026-06-24T12:44:44] INFO  === Phase 7: Monitoring Health Checks ===
+[2026-06-24T12:44:44] INFO  Preparing health directory
+[2026-06-24T12:44:44] OK    Health directory ready
+[2026-06-24T12:44:44] INFO  Checking service ports
+[2026-06-24T12:44:44] OK    API status: "down"
+[2026-06-24T12:44:44] OK    Payments status: "down"
+[2026-06-24T12:44:44] INFO  Writing health JSON
+[2026-06-24T12:44:44] OK    Health JSON written
+[2026-06-24T12:44:44] INFO  Verifying health artifact
+[2026-06-24T12:44:44] OK    Health file readable
+[2026-06-24T12:44:44] OK    Phase 7 complete
+[2026-06-24T12:44:44] INFO  === Phase 8: Full Provision Verification ===
+[2026-06-24T12:44:44] INFO  Verifying package state
+[2026-06-24T12:44:44] OK    PASS nginx hold active
+[2026-06-24T12:44:44] OK    PASS nodejs hold active
+[2026-06-24T12:44:44] INFO  Verifying users
+[2026-06-24T12:44:44] OK    PASS kk-api exists
+[2026-06-24T12:44:44] OK    PASS kk-payments exists
+[2026-06-24T12:44:44] OK    PASS kk-logs exists
+[2026-06-24T12:44:44] INFO  Verifying directories
+[2026-06-24T12:44:44] OK    PASS directory api
+[2026-06-24T12:44:44] OK    PASS directory payments
+[2026-06-24T12:44:44] OK    PASS directory logs
+[2026-06-24T12:44:44] OK    PASS directory config
+[2026-06-24T12:44:44] OK    PASS directory scripts
+[2026-06-24T12:44:44] OK    PASS directory shared/logs
+[2026-06-24T12:44:44] OK    PASS directory health
+[2026-06-24T12:44:44] INFO  Verifying ACL
+getfacl: Removing leading '/' from absolute path names
+[2026-06-24T12:44:44] OK    PASS kk-api ACL exists
+getfacl: Removing leading '/' from absolute path names
+[2026-06-24T12:44:44] OK    PASS kk-payments ACL exists
+[2026-06-24T12:44:44] INFO  Verifying environment readability
+[2026-06-24T12:44:44] OK    PASS api env readable
+[2026-06-24T12:44:44] OK    PASS payments env readable
+[2026-06-24T12:44:45] OK    PASS logging env readable
+[2026-06-24T12:44:45] INFO  Verifying systemd
+[2026-06-24T12:44:45] OK    PASS kk-api enabled
+[2026-06-24T12:44:45] OK    PASS kk-payments enabled
+[2026-06-24T12:44:45] OK    PASS kk-logs enabled
+[2026-06-24T12:44:45] INFO  Verifying journal
+[2026-06-24T12:44:45] OK    PASS journal persistent configured
+[2026-06-24T12:44:45] INFO  Verifying logrotate
+[2026-06-24T12:44:45] OK    PASS logrotate config exists
+WARNING: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.
+
+reading config file /etc/logrotate.d/kijanikiosk
+Reading state from file: /var/lib/logrotate/status
+Allocating hash table for state file, size 64 entries
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+
+Handling 1 logs
+
+rotating pattern: /opt/kijanikiosk/shared/logs/*.log  after 1 days (14 rotations)
+empty log files are not rotated, old logs are removed
+switching euid from 0 to 995 and egid from 0 to 1001 (pid 12855)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-10.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log is empty)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-14.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log is empty)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-17.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log is empty)
+considering log /opt/kijanikiosk/shared/logs/verification.log
+  Now: 2026-06-24 12:44
+  Last rotated at 2026-06-24 12:00
+  log does not need rotating (log has already been rotated)
+not running postrotate script, since no logs were rotated
+switching euid from 995 to 0 and egid from 1001 to 0 (pid 12855)
+[2026-06-24T12:44:45] OK    PASS logrotate debug passes
+[2026-06-24T12:44:45] INFO  Verifying firewall
+[2026-06-24T12:44:45] OK    PASS ssh allowed
+[2026-06-24T12:44:45] OK    PASS http allowed
+[2026-06-24T12:44:45] OK    PASS payments rule present
+[2026-06-24T12:44:45] INFO  Verifying health
+[2026-06-24T12:44:45] OK    PASS health json exists
+[2026-06-24T12:44:45] OK    PASS health readable
+
+[2026-06-24T12:44:45] OK    Verification summary
+Passed: 28
+Failed: 0
+[2026-06-24T12:44:45] OK    Phase 8 complete
+[2026-06-24T12:44:45] OK    Provisioning complete
