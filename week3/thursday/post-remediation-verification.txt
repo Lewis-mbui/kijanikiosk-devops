@@ -1,0 +1,118 @@
+lewis@Ubuntu22:~/workspace/devops14$ top -bn1 | head -15
+top - 13:22:52 up  2:31,  1 user,  load average: 0.00, 0.00, 0.01
+Tasks: 208 total,   1 running, 207 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st
+MiB Mem :   3916.4 total,    301.0 free,    997.6 used,   2617.8 buff/cache
+MiB Swap:   2680.0 total,   2679.7 free,      0.3 used.   2630.2 avail Mem 
+
+    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND
+   1754 lewis     20   0 4573756 406452 145796 S   6.7  10.1   6:57.96 gnome-she+
+      1 root      20   0  168112  13480   8408 S   0.0   0.3   0:02.73 systemd
+      2 root      20   0       0      0      0 S   0.0   0.0   0:00.01 kthreadd
+      3 root      20   0       0      0      0 S   0.0   0.0   0:00.00 pool_work+
+      4 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R+
+      5 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R+
+      6 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R+
+      7 root       0 -20       0      0      0 I   0.0   0.0   0:00.00 kworker/R+
+lewis@Ubuntu22:~/workspace/devops14$ df -h
+Filesystem      Size  Used Avail Use% Mounted on
+tmpfs           392M  1.5M  391M   1% /run
+/dev/sda3        24G   15G  8.1G  65% /
+tmpfs           2.0G     0  2.0G   0% /dev/shm
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+/dev/sda2       512M  6.1M  506M   2% /boot/efi
+shared_folder   126G   64G   62G  51% /media/sf_shared_folder
+tmpfs           392M  2.4M  390M   1% /run/user/1000
+/dev/sr0         52M   52M     0 100% /media/lewis/VBox_GAs_7.2.10
+lewis@Ubuntu22:~/workspace/devops14$ sudo journalctl --disk-usage
+Archived and active journals take up 512.0M in the file system.
+lewis@Ubuntu22:~/workspace/devops14$ sudo logrotate --debug /etc/logrotate.d/kijanikiosk | tail -20
+WARNING: logrotate in debug mode does nothing except printing debug messages!  Consider using verbose mode (-v) instead if this is not what you want.
+
+reading config file /etc/logrotate.d/kijanikiosk
+Reading state from file: /var/lib/logrotate/status
+Allocating hash table for state file, size 64 entries
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+Creating new state
+
+Handling 1 logs
+
+rotating pattern: /opt/kijanikiosk/shared/logs/*.log  after 1 days (14 rotations)
+empty log files are not rotated, old logs are removed
+switching euid from 0 to 995 and egid from 0 to 1001 (pid 9008)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-10.log
+  Now: 2026-06-23 13:23
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log has been rotated at 2026-06-23 11:38, which is less than a day ago)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-14.log
+  Now: 2026-06-23 13:23
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log has been rotated at 2026-06-23 11:38, which is less than a day ago)
+considering log /opt/kijanikiosk/shared/logs/payments-2024-03-17.log
+  Now: 2026-06-23 13:23
+  Last rotated at 2026-06-23 11:38
+  log does not need rotating (log has been rotated at 2026-06-23 11:38, which is less than a day ago)
+not running postrotate script, since no logs were rotated
+switching euid from 995 to 0 and egid from 1001 to 0 (pid 9008)
+lewis@Ubuntu22:~/workspace/devops14$ sudo ufw status verbose
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), disabled (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                  
+80/tcp                     ALLOW IN    Anywhere                  
+22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+
+lewis@Ubuntu22:~/workspace/devops14$ sudo ss -tlnp
+State     Recv-Q    Send-Q        Local Address:Port         Peer Address:Port    Process                                                                           
+LISTEN    0         4096          127.0.0.53%lo:53                0.0.0.0:*        users:(("systemd-resolve",pid=373,fd=14))                                        
+LISTEN    0         511                 0.0.0.0:80                0.0.0.0:*        users:(("nginx",pid=787,fd=6),("nginx",pid=785,fd=6),("nginx",pid=782,fd=6))     
+LISTEN    0         128               127.0.0.1:631               0.0.0.0:*        users:(("cupsd",pid=735,fd=7))                                                   
+LISTEN    0         128                   [::1]:631                  [::]:*        users:(("cupsd",pid=735,fd=6))                                                   
+LISTEN    0         511                    [::]:80                   [::]:*        users:(("nginx",pid=787,fd=7),("nginx",pid=785,fd=7),("nginx",pid=782,fd=7))     
+lewis@Ubuntu22:~/workspace/devops14$ grep -n "provision_logging" kijanikiosk-provision.sh
+152:provision_logging() {
+447:  provision_logging
+
